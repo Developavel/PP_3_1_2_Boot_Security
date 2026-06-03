@@ -1,4 +1,4 @@
 package ru.kata.spring.boot_security.demo.repositories;
 
-public class UserRepository {
+public interface UserRepository {
 }
