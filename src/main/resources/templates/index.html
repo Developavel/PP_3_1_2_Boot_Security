@@ -1,66 +1,11 @@
-<!--<!DOCTYPE html>-->
-<!--<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml" lang="en">-->
-<!--<head>-->
-<!--    <meta charset="UTF-8">-->
-<!--    <title>Welcome</title>-->
-<!--</head>-->
-<!--<body>-->
-<!--<h1>Welcome to the Application!</h1>-->
-
-<!--<div sec:authorize="isAnonymous()">-->
-<!--    <p>Please <a href="/auth/login">login</a> to continue.</p>-->
-<!--</div>-->
-
-<!--<div sec:authorize="isAuthenticated()">-->
-<!--    <p>Welcome, <span sec:authentication="name"></span>!</p>-->
-<!--    <a href="/logout">Logout</a>-->
-<!--</div>-->
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Users</title>
+    <title>Welcome</title>
 </head>
 <body>
-
-<h1>Users:</h1>
-
-<table class="table table", border="1">
-    <thead>
-    <tr>
-        <th scope="col">Id</th>
-        <th scope="col">Username</th>
-        <th scope="col">Lastname</th>
-        <th scope="col">Role</th>
-        <th scope="col">Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each ="user : ${users}">
-        <td th:text="${user.id}"/>
-        <td th:text="${user.username}"/>
-        <td th:text="${user.lastname}"/>
-        <td th:each="role : ${user.getRoles()}" th:text="${role.getAuthority}"/>
-        <td>
-            <a th:href="'admin/edit?id='+${user.id}">Edit</a>
-            <a th:href="'admin/delete?id='+${user.id}">Delete</a>
-        </td>
-    </tr>
-    </tbody>
-</table>
-<br/>
-<form th:method="GET" th:action="@{/admin/new}">
-    <input type="submit" value="Create new user"/>
-</form>
-<br/>
-<form method="POST" th:action="@{/logout}">
-    <input type="submit" value="Logout"/>
-</form>
-
+<h1>Welcome to the Application my friend!</h1>
+<a href="/auth/login">Login</a>
 </body>
 </html>

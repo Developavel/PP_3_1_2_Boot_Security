@@ -25,13 +25,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
+                .antMatchers("/", "/index", "/auth/login", "/error").permitAll()  // ← добавить "/", "/index"
                 .antMatchers("/admin/**").hasRole("ADMIN")
-                .antMatchers("/auth/login", "/error").permitAll()
-                .anyRequest().hasAnyRole("USER", "ADMIN")
+                .antMatchers("/user").hasAnyRole("USER", "ADMIN")
+                .anyRequest().authenticated()
                 .and()
                 .formLogin().loginPage("/auth/login").loginProcessingUrl("/process_login")
                 .successHandler(successUserHandler)
                 .failureUrl("/auth/login?error")
+                .permitAll()
                 .and()
                 .logout().logoutSuccessUrl("/auth/login")
                 .permitAll();

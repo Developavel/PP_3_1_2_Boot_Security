@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel - Users</title>
+</head>
+<body>
+
+<h1>User Management</h1>
+
+<table border="1">
+  <thead>
+  <tr>
+    <th>Id</th>
+    <th>Username</th>
+    <th>Lastname</th>
+    <th>Roles</th>
+    <th>Actions</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr th:each="user : ${users}">
+    <td th:text="${user.id}"></td>
+    <td th:text="${user.username}"></td>
+    <td th:text="${user.lastname}"></td>
+    <td>
+            <span th:each="role, iterStat : ${user.roles}">
+                <span th:text="${role.name}"></span>
+                <span th:if="${!iterStat.last}">, </span>
+            </span>
+    </td>
+    <td>
+      <a th:href="@{/admin/edit(id=${user.id})}">Edit</a>
+      <a th:href="@{/admin/delete(id=${user.id})}">Delete</a>
+    </td>
+  </tr>
+  </tbody>
+</table>
+
+<br/>
+<a th:href="@{/admin/new}"><button>Create New User</button></a>
+
+<br/><br/>
+
+<form method="POST" th:action="@{/logout}">
+  <button type="submit">Logout</button>
+</form>
+
+</body>
+</html>

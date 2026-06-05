@@ -1,29 +1,39 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>New user</title>
+  <title>New User</title>
 </head>
 <body>
 
+<h2>Create New User</h2>
+
 <form th:method="POST" th:action="@{/admin}" th:object="${user}">
-  <label for="username">Enter username: </label>
-  <input type="text" th:field="*{username}" id="username"/>
-  <label for="lastname">Enter lastname: </label>
-  <input type="text" th:field="*{lastname}" id="lastname"/>
-  <label for="password">Enter password: </label>
-  <input type="text" th:field="*{password}" id="password"/>
-  <label for="role">Enter role (User - 1, Admin - 2): </label>
-  <input type="text" th:field="*{roles}" id="role"/>
-  <br/>
-  <br/>
-  <input type="submit" value="Create!"/>
-  <br/>
-  <br/>
-  <form method="POST" th:action="@{/logout}">
-    <input type="submit" value="Logout"/>
-  </form>
+
+  <label>Username:</label>
+  <input type="text" th:field="*{username}"/><br/>
+
+  <label>Lastname:</label>
+  <input type="text" th:field="*{lastname}"/><br/>
+
+  <label>Password:</label>
+  <input type="password" th:field="*{password}"/><br/>
+
+  <label>Roles:</label>
+  <select name="roleIds" multiple>
+    <option th:each="role : ${allRoles}"
+            th:value="${role.id}"
+            th:text="${role.name}">
+    </option>
+  </select>
+  <small>Hold Ctrl to select multiple roles</small><br/>
+
+  <input type="submit" value="Create"/>
+</form>
+
+<br/>
+<form method="POST" th:action="@{/logout}">
+  <input type="submit" value="Logout"/>
 </form>
 
 </body>

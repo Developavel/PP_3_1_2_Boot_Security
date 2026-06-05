@@ -1,11 +1,10 @@
 package ru.kata.spring.boot_security.demo.services;
 
-import org.hibernate.Hibernate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.List;
 
@@ -13,47 +12,50 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepository;
+    private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder) {
+        this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public List<User> listUsers() {
-        return userRepository.findAll();
+        return userDao.listUsers();
     }
 
     @Override
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userDao.findByUsername(username);
     }
 
     @Override
     public User show(int id) {
-        User user = userRepository.getById(id);
-        Hibernate.initialize(user.getRoles());
-        return user;
+        return userDao.show(id);
+    }
+
+    @Override
+    public User findById(int id) {
+        return userDao.findById(id);
     }
 
     @Override
     @Transactional
     public void create(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        userDao.save(user);
     }
 
     @Override
     @Transactional
-    public void update(User updateUser) {
-        userRepository.save(updateUser);
+    public void update(User user) {
+        userDao.update(user);
     }
 
     @Override
     @Transactional
     public void delete(int id) {
-        userRepository.deleteById(id);
+        userDao.delete(id);
     }
 }
