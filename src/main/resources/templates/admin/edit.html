@@ -1,7 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org">
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Update user</title>
@@ -9,23 +7,45 @@
 <body>
 
 <form th:method="POST" th:action="@{/admin/edit}" th:object="${user}">
-  <input hidden="hidden" type="number" th:field="*{id}" id="id">
-  <label for="username">Enter username: </label>
-  <input type="text" th:field="*{username}" id="username"/>
-  <label for="lastname">Enter lastname: </label>
-  <input type="text" th:field="*{lastname}" id="lastname"/>
-  <label for="password">Enter password: </label>
-  <input type="text" th:field="*{password}" id="password"/>
-  <label for="role">Enter role (User - 1, Admin - 2): </label>
-  <input type="text" th:field="*{roles}" id="role"/>
-  <br/>
+
+  <!-- Скрытые поля -->
+  <input type="hidden" th:field="*{id}">
+  <input type="hidden" th:field="*{password}">
+
+  <div>
+    <label for="username">Enter username: </label>
+    <input type="text" th:field="*{username}" id="username"/>
+  </div>
+
+  <div>
+    <label for="lastname">Enter lastname: </label>
+    <input type="text" th:field="*{lastname}" id="lastname"/>
+  </div>
+
+  <div>
+    <label for="password">New password (optional): </label>
+    <input type="password" id="password" name="newPassword"/>
+  </div>
+
+  <div>
+    <label>Select roles: </label>
+    <select th:field="*{roles}" multiple>
+      <option th:each="role : ${allRoles}"
+              th:value="${role.id}"
+              th:text="${role.name}">
+      </option>
+    </select>
+    <small>Hold Ctrl to select multiple roles</small>
+  </div>
+
   <br/>
   <input type="submit" value="Update!"/>
-  <br/>
-  <br/>
-  <form method="POST" th:action="@{/logout}">
-    <input type="submit" value="Logout"/>
-  </form>
+</form>
+
+<br/>
+
+<form method="POST" th:action="@{/logout}">
+  <input type="submit" value="Logout"/>
 </form>
 
 </body>
