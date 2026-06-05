@@ -11,7 +11,11 @@
 <p><strong>ID:</strong> <span th:text="${user.id}"></span></p>
 <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
 <p><strong>Lastname:</strong> <span th:text="${user.lastname}"></span></p>
-<p><strong>Roles:</strong> <span th:text="${user.roles}"></span></p>
+<p><strong>Roles:</strong>
+    <span th:each="role, iterStat : ${user.roles}">
+        <span th:text="${role.name}"></span><span th:if="${!iterStat.last}">, </span>
+    </span>
+</p>
 
 <br/>
 

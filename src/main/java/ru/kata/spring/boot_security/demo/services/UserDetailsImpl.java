@@ -12,6 +12,7 @@ import java.util.Optional;
 
 @Service
 public class UserDetailsImpl implements UserDetailsService {
+
     private final UserDao userDao;
 
     public UserDetailsImpl(UserDao userDao) {
@@ -20,9 +21,8 @@ public class UserDetailsImpl implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) {
-        User user = Optional.ofNullable(userDao.findByUsername(username))
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User " + username + " not found!")));
-        return user;
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userDao.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User " + username + " not found!"));
     }
 }
