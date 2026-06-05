@@ -9,7 +9,6 @@ public class UserUpdateRequest {
     private String newPassword;
     private Set<Integer> roleIds;
 
-    // Конструкторы, геттеры, сеттеры
     public UserUpdateRequest() {}
 
     public int getId() {
