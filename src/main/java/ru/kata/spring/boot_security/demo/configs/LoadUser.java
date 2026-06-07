@@ -4,8 +4,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
-import ru.kata.spring.boot_security.demo.models.Role;
-import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.model.Role;
+import ru.kata.spring.boot_security.demo.model.User;
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.Set;
@@ -26,22 +26,34 @@ public class LoadUser {
     @PostConstruct
     @Transactional
     public void loadUsers() {
-        if (roleDao.listRoles().isEmpty()) {
-            Role roleUser = new Role("ROLE_USER");
-            Role roleAdmin = new Role("ROLE_ADMIN");
-
+        // Создаём роли, если их нет
+        Role roleUser = roleDao.findByName("ROLE_USER");
+        if (roleUser == null) {
+            roleUser = new Role("ROLE_USER");
             roleDao.save(roleUser);
-            roleDao.save(roleAdmin);
-
-            User user = new User("user", "Userov", passwordEncoder.encode("user"), Set.of(roleUser));
-            User admin = new User("admin", "Adminov", passwordEncoder.encode("admin"), Set.of(roleAdmin, roleUser));
-
-            userDao.save(user);
-            userDao.save(admin);
-
-            System.out.println("Тестовые пользователи созданы: user/user, admin/admin");
-        } else {
-            System.out.println("Пользователи уже существуют, инициализация пропущена.");
+            System.out.println("Создана роль ROLE_USER");
         }
+
+        Role roleAdmin = roleDao.findByName("ROLE_ADMIN");
+        if (roleAdmin == null) {
+            roleAdmin = new Role("ROLE_ADMIN");
+            roleDao.save(roleAdmin);
+            System.out.println("Создана роль ROLE_ADMIN");
+        }
+
+        // Создаём пользователей, если их нет
+        if (userDao.findByUsername("user").isEmpty()) {
+            User user = new User("user", "Userov", passwordEncoder.encode("user"), Set.of(roleUser));
+            userDao.save(user);
+            System.out.println("Создан пользователь user/user");
+        }
+
+        if (userDao.findByUsername("admin").isEmpty()) {
+            User admin = new User("admin", "Adminov", passwordEncoder.encode("admin"), Set.of(roleAdmin, roleUser));
+            userDao.save(admin);
+            System.out.println("Создан пользователь admin/admin");
+        }
+
+        System.out.println("Инициализация завершена");
     }
 }

@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
-import ru.kata.spring.boot_security.demo.models.Role;
-import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.model.Role;
+import ru.kata.spring.boot_security.demo.model.User;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -51,15 +51,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(User user, Set<Integer> roleIds) {
-        // Сохраняем старый пароль, если поле password пустое
-        if (user.getPassword() == null || user.getPassword().isEmpty()) {
-            findById(user.getId()).ifPresent(existing -> user.setPassword(existing.getPassword()));
-        } else {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public void update(User user, Set<Integer> roleIds, String newPassword) {
+        User existing = findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        existing.setUsername(user.getUsername());
+        existing.setLastname(user.getLastname());
+        if (newPassword != null && !newPassword.isEmpty()) {
+            existing.setPassword(passwordEncoder.encode(newPassword));
         }
-        user.setRoles(convertIdsToRoles(roleIds));
-        userDao.update(user);
+        existing.setRoles(convertIdsToRoles(roleIds));
+        userDao.save(existing);   // ← вместо update
     }
 
     @Override

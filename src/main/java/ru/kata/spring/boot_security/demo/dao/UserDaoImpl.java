@@ -1,7 +1,7 @@
 package ru.kata.spring.boot_security.demo.dao;
 
 import org.springframework.stereotype.Repository;
-import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -29,7 +29,7 @@ public class UserDaoImpl implements UserDao {
                             "SELECT DISTINCT u FROM User u JOIN FETCH u.roles WHERE u.id = :id", User.class)
                     .setParameter("id", id)
                     .getSingleResult();
-            return Optional.ofNullable(user);
+            return Optional.of(user);
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -42,7 +42,7 @@ public class UserDaoImpl implements UserDao {
                             "SELECT DISTINCT u FROM User u JOIN FETCH u.roles WHERE u.username = :username", User.class)
                     .setParameter("username", username)
                     .getSingleResult();
-            return Optional.ofNullable(user);
+            return Optional.of(user);
         } catch (NoResultException e) {
             return Optional.empty();
         }
@@ -51,13 +51,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     @Transactional
     public void save(User user) {
-        entityManager.persist(user);
-    }
-
-    @Override
-    @Transactional
-    public void update(User user) {
-        entityManager.merge(user);
+        entityManager.merge(user);   // ← ключевое исправление
     }
 
     @Override
