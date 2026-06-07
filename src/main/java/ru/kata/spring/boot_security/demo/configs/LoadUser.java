@@ -1,7 +1,5 @@
 package ru.kata.spring.boot_security.demo.configs;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.kata.spring.boot_security.demo.dao.RoleDao;
@@ -14,7 +12,6 @@ import java.util.Set;
 
 @Component
 public class LoadUser {
-    private static final Logger log = LoggerFactory.getLogger(LoadUser.class);
 
     private final UserDao userDao;
     private final RoleDao roleDao;
@@ -30,23 +27,21 @@ public class LoadUser {
     @Transactional
     public void loadUsers() {
         if (roleDao.listRoles().isEmpty()) {
-            Role userRole = new Role("ROLE_USER");
-            Role adminRole = new Role("ROLE_ADMIN");
+            Role roleUser = new Role("ROLE_USER");
+            Role roleAdmin = new Role("ROLE_ADMIN");
 
-            roleDao.save(userRole);
-            roleDao.save(adminRole);
+            roleDao.save(roleUser);
+            roleDao.save(roleAdmin);
 
-            User user = new User("User", "Userov",
-                    passwordEncoder.encode("user"), Set.of(userRole));
-            User admin = new User("Admin", "Adminov",
-                    passwordEncoder.encode("admin"), Set.of(adminRole, userRole));
+            User user = new User("user", "Userov", passwordEncoder.encode("user"), Set.of(roleUser));
+            User admin = new User("admin", "Adminov", passwordEncoder.encode("admin"), Set.of(roleAdmin, roleUser));
 
             userDao.save(user);
             userDao.save(admin);
 
-            log.info("Тестовые пользователи созданы: user/user, admin/admin");
+            System.out.println("Тестовые пользователи созданы: user/user, admin/admin");
         } else {
-            log.debug("Пользователи уже существуют, инициализация пропущена.");
+            System.out.println("Пользователи уже существуют, инициализация пропущена.");
         }
     }
 }

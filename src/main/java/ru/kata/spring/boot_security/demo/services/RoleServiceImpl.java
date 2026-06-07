@@ -1,8 +1,8 @@
 package ru.kata.spring.boot_security.demo.services;
 
 import org.springframework.stereotype.Service;
-import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.dao.RoleDao;
+import ru.kata.spring.boot_security.demo.models.Role;
 import java.util.HashSet;
 import java.util.Set;
 

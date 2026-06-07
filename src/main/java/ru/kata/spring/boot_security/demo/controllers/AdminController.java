@@ -2,11 +2,7 @@ package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import ru.kata.spring.boot_security.demo.models.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
@@ -31,7 +27,7 @@ public class AdminController {
     }
 
     @GetMapping("/new")
-    public String newUser(Model model) {
+    public String showCreateForm(Model model) {
         model.addAttribute("user", new User());
         model.addAttribute("allRoles", roleService.listRoles());
         return "admin/new";
@@ -45,26 +41,25 @@ public class AdminController {
     }
 
     @GetMapping("/edit")
-    public String edit(Model model, @RequestParam("id") int id) {
-        User user = userService.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
+    public String showEditForm(@RequestParam int id, Model model) {
+        User user = userService.findById(id).orElse(null);
+        if (user == null) {
+            return "redirect:/admin?error=notfound";
+        }
         model.addAttribute("user", user);
         model.addAttribute("allRoles", roleService.listRoles());
         return "admin/edit";
     }
 
     @PostMapping("/edit")
-    public String update(@RequestParam("id") int id,
-                         @RequestParam("username") String username,
-                         @RequestParam("lastname") String lastname,
-                         @RequestParam(value = "newPassword", required = false) String newPassword,
+    public String update(@ModelAttribute User user,
                          @RequestParam(value = "roleIds", required = false) Set<Integer> roleIds) {
-        userService.update(id, username, lastname, newPassword, roleIds);
+        userService.update(user, roleIds != null ? roleIds : Set.of());
         return "redirect:/admin";
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") int id) {
+    public String delete(@RequestParam int id) {
         userService.delete(id);
         return "redirect:/admin";
     }

@@ -13,6 +13,7 @@ import ru.kata.spring.boot_security.demo.services.UserDetailsImpl;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
     private final SuccessUserHandler successUserHandler;
     private final UserDetailsImpl userDetailsService;
 
@@ -23,33 +24,37 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
+        http
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/", "/index", "/auth/login", "/error").permitAll()  // ← добавить "/", "/index"
+                .antMatchers("/", "/index", "/auth/login", "/error").permitAll()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/user").hasAnyRole("USER", "ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                .formLogin().loginPage("/auth/login").loginProcessingUrl("/process_login")
+                .formLogin()
+                .loginPage("/auth/login")
+                .loginProcessingUrl("/process_login")
                 .successHandler(successUserHandler)
                 .failureUrl("/auth/login?error")
                 .permitAll()
                 .and()
-                .logout().logoutSuccessUrl("/auth/login")
+                .logout()
+                .logoutSuccessUrl("/auth/login")
                 .permitAll();
     }
 
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+
     @Bean
-    public PasswordEncoder getPasswordEncoder() {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
-        authenticationManagerBuilder.userDetailsService(userDetailsService)
-                .passwordEncoder(getPasswordEncoder());
-    }
-// аутентификация inMemory
+    // аутентификация inMemory
 //    @Bean
 //    @Override
 //    public UserDetailsService userDetailsService() {

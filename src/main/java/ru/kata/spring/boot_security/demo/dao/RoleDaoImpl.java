@@ -6,15 +6,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class RoleDaoImpl implements RoleDao {
+
     @PersistenceContext
     private EntityManager entityManager;
-
-    public RoleDaoImpl(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
 
     @Override
     public List<Role> listRoles() {
@@ -22,8 +20,8 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public Role findById(int id) {
-        return entityManager.find(Role.class, id);
+    public Optional<Role> findById(int id) {
+        return Optional.ofNullable(entityManager.find(Role.class, id));
     }
 
     @Override

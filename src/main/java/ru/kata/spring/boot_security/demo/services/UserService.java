@@ -7,9 +7,9 @@ import java.util.Set;
 
 public interface UserService {
  List<User> listUsers();
- Optional<User> findByUsername(String username);
  Optional<User> findById(int id);
+ Optional<User> findByUsername(String username);
  void create(User user, Set<Integer> roleIds);
- void update(int id, String username, String lastname, String newPassword, Set<Integer> roleIds);
+ void update(User user, Set<Integer> roleIds);
  void delete(int id);
 }

@@ -32,46 +32,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userDao.findByUsername(username);
+    public Optional<User> findById(int id) {
+        return userDao.findById(id);
     }
 
     @Override
-    public Optional<User> findById(int id) {
-        return userDao.findById(id);
+    public Optional<User> findByUsername(String username) {
+        return userDao.findByUsername(username);
     }
 
     @Override
     @Transactional
     public void create(User user, Set<Integer> roleIds) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Set<Role> roles = new HashSet<>();
-        for (Integer roleId : roleIds) {
-            Role role = roleDao.findById(roleId);
-            if (role != null) roles.add(role);
-        }
-        user.setRoles(roles);
+        user.setRoles(convertIdsToRoles(roleIds));
         userDao.save(user);
     }
 
     @Override
     @Transactional
-    public void update(int id, String username, String lastname, String newPassword, Set<Integer> roleIds) {
-        User user = userDao.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
-        user.setUsername(username);
-        user.setLastname(lastname);
-        if (newPassword != null && !newPassword.isBlank()) {
-            user.setPassword(passwordEncoder.encode(newPassword));
+    public void update(User user, Set<Integer> roleIds) {
+        // Сохраняем старый пароль, если поле password пустое
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            findById(user.getId()).ifPresent(existing -> user.setPassword(existing.getPassword()));
+        } else {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        if (roleIds != null) {
-            Set<Role> roles = new HashSet<>();
-            for (Integer roleId : roleIds) {
-                Role role = roleDao.findById(roleId);
-                if (role != null) roles.add(role);
-            }
-            user.setRoles(roles);
-        }
+        user.setRoles(convertIdsToRoles(roleIds));
         userDao.update(user);
     }
 
@@ -79,5 +66,15 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void delete(int id) {
         userDao.delete(id);
+    }
+
+    private Set<Role> convertIdsToRoles(Set<Integer> roleIds) {
+        Set<Role> roles = new HashSet<>();
+        if (roleIds != null) {
+            for (Integer id : roleIds) {
+                roleDao.findById(id).ifPresent(roles::add);
+            }
+        }
+        return roles;
     }
 }
