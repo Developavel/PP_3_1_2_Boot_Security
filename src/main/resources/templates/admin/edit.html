@@ -10,7 +10,6 @@
 
 <form th:method="POST" th:action="@{/admin/edit}" th:object="${user}">
   <input type="hidden" th:field="*{id}">
-  <input type="hidden" th:field="*{password}">
 
   <label>Username:</label>
   <input type="text" th:field="*{username}"/><br/>
@@ -18,8 +17,8 @@
   <label>Lastname:</label>
   <input type="text" th:field="*{lastname}"/><br/>
 
-<!--  <label>New Password (optional):</label>-->
-<!--  <input type="password" name="newPassword"/><br/>-->
+  <label>New Password (optional):</label>
+  <input type="password" name="newPassword"/><br/>
 
   <label>Roles:</label>
   <select name="roleIds" multiple>
