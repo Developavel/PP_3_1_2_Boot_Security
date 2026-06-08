@@ -28,14 +28,13 @@ public class Initializer {
     @Transactional
     public void loadUsers() {
         // Создаём роли, если их нет
-        Role roleUser = roleDao.findByName("ROLE_USER");
+        Role roleUser = roleDao.findByName("ROLE_USER").orElse(null);
         if (roleUser == null) {
             roleUser = new Role("ROLE_USER");
             roleDao.save(roleUser);
             System.out.println("Создана роль ROLE_USER");
         }
-
-        Role roleAdmin = roleDao.findByName("ROLE_ADMIN");
+        Role roleAdmin = roleDao.findByName("ROLE_ADMIN").orElse(null);
         if (roleAdmin == null) {
             roleAdmin = new Role("ROLE_ADMIN");
             roleDao.save(roleAdmin);
