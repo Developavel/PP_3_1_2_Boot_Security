@@ -10,7 +10,8 @@ public interface RoleDao {
 
     Optional<Role> findById(int id);
 
-    Role findByName(String name);
+    //Role findByName(String name);
+    Optional<Role> findByName(String name);
 
     void save(Role role);
 }

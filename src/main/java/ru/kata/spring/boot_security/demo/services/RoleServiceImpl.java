@@ -5,6 +5,7 @@ import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -20,18 +21,34 @@ public class RoleServiceImpl implements RoleService {
         return roleDao.listRoles();
     }
 
+//    @Override
+//    public Role findByName(String name) {
+//        return roleDao.findByName(name);
+//    }
+
+//    @Override
+//    public Role findById(int id) {
+//        return roleDao.findById(id).orElse(null);
+//    }
+
+//    @Override
+//    public Role getDefaultRole() {
+//        return findByName("ROLE_USER");
+//    }
+
     @Override
-    public Role findByName(String name) {
+    public Optional<Role> findByName(String name) {
         return roleDao.findByName(name);
     }
 
     @Override
-    public Role findById(int id) {
-        return roleDao.findById(id).orElse(null);
+    public Optional<Role> findById(int id) {
+        return roleDao.findById(id);
     }
 
     @Override
     public Role getDefaultRole() {
-        return findByName("ROLE_USER");
+        return findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Default role ROLE_USER not found"));
     }
 }
