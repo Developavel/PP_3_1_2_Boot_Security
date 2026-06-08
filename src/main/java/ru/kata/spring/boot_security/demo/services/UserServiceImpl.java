@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Реализация сервиса для управления пользователями.
+ * Содержит бизнес-логику: создание, обновление, удаление, назначение ролей, кодирование пароля.
+ */
 @Service
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
@@ -37,11 +41,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
-        return userDao.findByUsername(username);
-    }
-
-    @Override
     @Transactional
     public void create(User user, Set<Integer> roleIds) {
         if (roleIds == null || roleIds.isEmpty()) {
@@ -56,8 +55,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void update(User user, Set<Integer> roleIds, String newPassword) {
+        if (roleIds == null || roleIds.isEmpty()) {
+            throw new IllegalArgumentException("Пользователь должен иметь как минимум одну роль!");
+        }
         User existing = findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден!"));
         existing.setUsername(user.getUsername());
         existing.setLastname(user.getLastname());
         if (newPassword != null && !newPassword.isEmpty()) {
@@ -77,8 +79,7 @@ public class UserServiceImpl implements UserService {
         Set<Role> roles = new HashSet<>();
         if (roleIds != null) {
             for (Integer id : roleIds) {
-                Role role = roleService.findById(id);
-                if (role != null) roles.add(role);
+                roleService.findById(id).ifPresent(roles::add);
             }
         }
         return roles;

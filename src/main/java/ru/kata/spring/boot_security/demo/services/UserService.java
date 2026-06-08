@@ -11,8 +11,6 @@ public interface UserService {
 
     Optional<User> findById(int id);
 
-    Optional<User> findByUsername(String username);
-
     void create(User user, Set<Integer> roleIds);
 
     void update(User user, Set<Integer> roleIds, String newPassword);
