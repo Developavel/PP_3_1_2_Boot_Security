@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
+
 import java.util.Set;
 
 @Controller
@@ -17,11 +18,11 @@ import java.util.Set;
 public class AdminController {
 
     private final UserService userService;
-    private final RoleDao roleDao;   // ← теперь напрямую используем DAO
+    private final RoleService roleService;
 
-    public AdminController(UserService userService, RoleDao roleDao) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.roleDao = roleDao;
+        this.roleService = roleService;
     }
 
     @GetMapping
@@ -33,7 +34,7 @@ public class AdminController {
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         model.addAttribute("user", new User());
-        model.addAttribute("allRoles", roleDao.listRoles());   // ← вызов DAO
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "admin/new";
     }
 
@@ -51,7 +52,7 @@ public class AdminController {
             return "redirect:/admin?error=notfound";
         }
         model.addAttribute("user", user);
-        model.addAttribute("allRoles", roleDao.listRoles());   // ← вызов DAO
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "admin/edit";
     }
 

@@ -6,18 +6,19 @@ import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+
 import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.Set;
 
 @Component
-public class LoadUser {
+public class Initializer {
 
     private final UserDao userDao;
     private final RoleDao roleDao;
     private final PasswordEncoder passwordEncoder;
 
-    public LoadUser(UserDao userDao, RoleDao roleDao, PasswordEncoder passwordEncoder) {
+    public Initializer(UserDao userDao, RoleDao roleDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
         this.roleDao = roleDao;
         this.passwordEncoder = passwordEncoder;
@@ -41,13 +42,7 @@ public class LoadUser {
             System.out.println("Создана роль ROLE_ADMIN");
         }
 
-        // Создаём пользователей, если их нет
-        if (userDao.findByUsername("user").isEmpty()) {
-            User user = new User("user", "Userov", passwordEncoder.encode("user"), Set.of(roleUser));
-            userDao.save(user);
-            System.out.println("Создан пользователь user/user");
-        }
-
+        // Создаём администратора, если его нет
         if (userDao.findByUsername("admin").isEmpty()) {
             User admin = new User("admin", "Adminov", passwordEncoder.encode("admin"), Set.of(roleAdmin, roleUser));
             userDao.save(admin);

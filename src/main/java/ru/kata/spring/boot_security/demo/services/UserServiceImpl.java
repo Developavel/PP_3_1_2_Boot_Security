@@ -3,10 +3,10 @@ package ru.kata.spring.boot_security.demo.services;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -17,12 +17,12 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
-    private final RoleDao roleDao;
+    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserDao userDao, RoleDao roleDao, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserDao userDao, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
-        this.roleDao = roleDao;
+        this.roleService = roleService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -44,8 +44,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void create(User user, Set<Integer> roleIds) {
+        if (roleIds == null || roleIds.isEmpty()) {
+            user.setRoles(Set.of(roleService.getDefaultRole()));
+        } else {
+            user.setRoles(convertIdsToRoles(roleIds));
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(convertIdsToRoles(roleIds));
         userDao.save(user);
     }
 
@@ -60,7 +64,7 @@ public class UserServiceImpl implements UserService {
             existing.setPassword(passwordEncoder.encode(newPassword));
         }
         existing.setRoles(convertIdsToRoles(roleIds));
-        userDao.save(existing);   // ← вместо update
+        userDao.save(existing);
     }
 
     @Override
@@ -73,7 +77,8 @@ public class UserServiceImpl implements UserService {
         Set<Role> roles = new HashSet<>();
         if (roleIds != null) {
             for (Integer id : roleIds) {
-                roleDao.findById(id).ifPresent(roles::add);
+                Role role = roleService.findById(id);
+                if (role != null) roles.add(role);
             }
         }
         return roles;

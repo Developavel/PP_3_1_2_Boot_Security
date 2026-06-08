@@ -2,6 +2,7 @@ package ru.kata.spring.boot_security.demo.dao;
 
 import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.model.User;
+
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
@@ -51,7 +52,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     @Transactional
     public void save(User user) {
-        entityManager.merge(user);   // ← ключевое исправление
+        entityManager.merge(user);
     }
 
     @Override
