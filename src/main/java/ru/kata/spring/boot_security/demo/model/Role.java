@@ -1,5 +1,11 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Column;
@@ -8,7 +14,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.util.Objects;
 
 /**
  * Сущность роли, реализующая {@link GrantedAuthority} для использования в Spring Security.
@@ -16,6 +21,11 @@ import java.util.Objects;
  * Название роли должно быть уникальным и не может быть пустым.
  * Используется в связях ManyToMany с пользователями.
  */
+@Getter
+@Setter
+@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {
@@ -25,11 +35,9 @@ public class Role implements GrantedAuthority {
     private int id;
 
     @Column(name = "name", unique = true, nullable = false)
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private String name;
-
-    public Role() {
-
-    }
 
     public Role(String name) {
         this.name = name;
@@ -37,40 +45,6 @@ public class Role implements GrantedAuthority {
 
     @Override
     public String getAuthority() {
-        return name;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Role role = (Role) o;
-        return id == role.id && Objects.equals(name, role.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
-
-    @Override
-    public String toString() {
         return name;
     }
 }

@@ -1,5 +1,8 @@
 package ru.kata.spring.boot_security.demo.configs;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.kata.spring.boot_security.demo.dao.RoleDao;
@@ -19,6 +22,8 @@ import java.util.Set;
 @Component
 public class Initializer {
 
+    private static final Logger log = LoggerFactory.getLogger(Initializer.class);
+
     private final UserDao userDao;
     private final RoleDao roleDao;
     private final PasswordEncoder passwordEncoder;
@@ -37,22 +42,22 @@ public class Initializer {
         if (roleUser == null) {
             roleUser = new Role("ROLE_USER");
             roleDao.save(roleUser);
-            System.out.println("Создана роль ROLE_USER");
+            log.info("Создана роль ROLE_USER");
         }
         Role roleAdmin = roleDao.findByName("ROLE_ADMIN").orElse(null);
         if (roleAdmin == null) {
             roleAdmin = new Role("ROLE_ADMIN");
             roleDao.save(roleAdmin);
-            System.out.println("Создана роль ROLE_ADMIN");
+            log.info("Создана роль ROLE_ADMIN");
         }
 
         // Создаём администратора, если его нет
         if (userDao.findByUsername("admin").isEmpty()) {
             User admin = new User("admin", "Adminov", passwordEncoder.encode("admin"), Set.of(roleAdmin, roleUser));
             userDao.save(admin);
-            System.out.println("Создан пользователь admin/admin");
+            log.info("Создан пользователь admin/admin");
         }
 
-        System.out.println("Инициализация завершена");
+        log.info("Инициализация завершена");
     }
 }
