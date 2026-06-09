@@ -45,13 +45,13 @@ public class AdminController {
 
     @PostMapping
     public String create(@ModelAttribute User user,
-                         @RequestParam(value = "roleIds", required = false) Set<Integer> roleIds) {
+                         @RequestParam(value = "roleIds", required = false) Set<Long> roleIds) {
         userService.create(user, roleIds != null ? roleIds : Set.of());
         return "redirect:/admin";
     }
 
     @GetMapping("/edit")
-    public String showEditForm(@RequestParam int id, Model model) {
+    public String showEditForm(@RequestParam Long id, Model model) {
         User user = userService.findById(id).orElse(null);
         if (user == null) {
             return "redirect:/admin?error=notfound";
@@ -63,14 +63,14 @@ public class AdminController {
 
     @PostMapping("/edit")
     public String update(@ModelAttribute User user,
-                         @RequestParam(value = "roleIds", required = false) Set<Integer> roleIds,
+                         @RequestParam(value = "roleIds", required = false) Set<Long> roleIds,
                          @RequestParam(value = "newPassword", required = false) String newPassword) {
         userService.update(user, roleIds != null ? roleIds : Set.of(), newPassword);
         return "redirect:/admin";
     }
 
     @GetMapping("/delete")
-    public String delete(@RequestParam int id) {
+    public String delete(@RequestParam Long id) {
         userService.delete(id);
         return "redirect:/admin";
     }
