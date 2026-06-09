@@ -5,7 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
- * Отображает страницу входа
+ * Контроллер для отображения формы входа.
+ * Обрабатывает GET-запросы к /auth/login, возвращая представление auth/login.
+ * Саму аутентификацию (проверку учётных данных) выполняет Spring Security.
  */
 @Controller
 @RequestMapping("/auth")

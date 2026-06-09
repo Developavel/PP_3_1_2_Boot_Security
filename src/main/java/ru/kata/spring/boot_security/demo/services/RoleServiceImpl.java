@@ -7,6 +7,11 @@ import ru.kata.spring.boot_security.demo.model.Role;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Сервис для управления ролями.
+ * Содержит бизнес-логику: получение всех ролей, поиск по имени и идентификатору,
+ * а также получение роли по умолчанию (ROLE_USER).
+ */
 @Service
 public class RoleServiceImpl implements RoleService {
 

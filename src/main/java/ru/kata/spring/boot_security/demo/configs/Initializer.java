@@ -11,6 +11,11 @@ import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.Set;
 
+/**
+ * Компонент для начальной инициализации данных.
+ * При старте приложения создаёт роли ROLE_USER и ROLE_ADMIN (если их нет),
+ * а также администратора (admin/admin), если он отсутствует.
+ */
 @Component
 public class Initializer {
 

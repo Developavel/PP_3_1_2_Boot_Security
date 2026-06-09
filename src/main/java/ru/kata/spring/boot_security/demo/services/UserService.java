@@ -6,6 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Сервис для управления пользователями.
+ * Определяет контракт для создания, обновления, удаления и поиска пользователей по идентификатору.
+ * Реализации должны обеспечивать кодирование пароля и проверку наличия ролей.
+ */
 public interface UserService {
     List<User> listUsers();
 

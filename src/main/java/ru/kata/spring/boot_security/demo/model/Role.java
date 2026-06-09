@@ -10,6 +10,12 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.Objects;
 
+/**
+ * Сущность роли, реализующая {@link GrantedAuthority} для использования в Spring Security.
+ * Содержит идентификатор и название роли (например, "ROLE_USER", "ROLE_ADMIN").
+ * Название роли должно быть уникальным и не может быть пустым.
+ * Используется в связях ManyToMany с пользователями.
+ */
 @Entity
 @Table(name = "roles")
 public class Role implements GrantedAuthority {

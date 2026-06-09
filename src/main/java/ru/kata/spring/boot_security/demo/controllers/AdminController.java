@@ -13,6 +13,11 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 
 import java.util.Set;
 
+/**
+ * Контроллер панели администратора.
+ * Обрабатывает запросы на отображение списка пользователей, создание,
+ * редактирование, удаление пользователей и назначение ролей.
+ */
 @Controller
 @RequestMapping("/admin")
 public class AdminController {

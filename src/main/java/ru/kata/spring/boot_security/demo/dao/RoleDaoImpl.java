@@ -10,6 +10,13 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Реализация DAO для сущности {@link Role}.
+ * Использует {@link EntityManager} для выполнения запросов к базе данных.
+ * Метод {@link #findById} – ищет роль по её идентификатору и возвращает {@link Optional}.
+ * Метод {@link #findByName} – ищет роль по имени и возвращает Optional, обрабатывает NoResultException.
+ * Метод {@link #save} поддерживает как вставку новых ролей (persist), так и обновление существующих (merge).
+ */
 @Repository
 public class RoleDaoImpl implements RoleDao {
 

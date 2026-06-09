@@ -10,6 +10,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Set;
 
+/**
+ * Обработчик успешной аутентификации, реализует интерфейс {@link AuthenticationSuccessHandler}.
+ * При успешном входе анализирует роли аутентифицированного пользователя:
+ * ROLE_ADMIN редирект на /admin
+ * ROLE_USER редирект на /user
+ * Иначе редирект на главную страницу /
+ */
 @Component
 public class SuccessUserHandler implements AuthenticationSuccessHandler {
 

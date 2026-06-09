@@ -5,6 +5,11 @@ import ru.kata.spring.boot_security.demo.model.User;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * DAO-интерфейс для доступа к данным пользователей.
+ * Определяет методы для CRUD-операций и поиска пользователей по идентификатору или имени.
+ * Все методы, возвращающие Optional, позволяют безопасно обрабатывать отсутствие пользователя.
+ */
 public interface UserDao {
     List<User> listUsers();
 

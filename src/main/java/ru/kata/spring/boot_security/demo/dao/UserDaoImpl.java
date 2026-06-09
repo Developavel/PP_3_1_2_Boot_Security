@@ -10,6 +10,14 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Реализация DAO для сущности {@link User}.
+ * Использует {@link EntityManager} для выполнения запросов к базе данных.
+ * Методы поиска ({@link #findById}, {@link #findByUsername}) используют JOIN FETCH
+ * для загрузки ролей в одной транзакции и возвращают {@link Optional}.
+ * Метод {@link #save} использует merge для поддержки как вставки, так и обновления.
+ * Метод {@link #delete} сначала находит пользователя, затем удаляет.
+ */
 @Repository
 public class UserDaoImpl implements UserDao {
 

@@ -18,6 +18,12 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
+/**
+ * Сущность пользователя, реализующая {@link UserDetails} для интеграции со Spring Security.
+ * Содержит учётные данные (username, password) и фамилию (lastname),
+ * список ролей и флаги состояния учётной записи (всегда активна).
+ * Связь с ролями — многие ко многим, с каскадированием PERSIST и MERGE.
+ */
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -34,6 +40,9 @@ public class User implements UserDetails {
 
     @Column(name = "password", nullable = false)
     private String password;
+
+//    @Column(name = "age", nullable = false)
+//    private int age;   // TODO
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_roles",
