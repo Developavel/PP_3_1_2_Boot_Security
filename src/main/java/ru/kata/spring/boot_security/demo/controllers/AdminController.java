@@ -33,6 +33,7 @@ public class AdminController {
     @GetMapping
     public String showUsers(Model model) {
         model.addAttribute("users", userService.listUsers());
+        model.addAttribute("allRoles", roleService.getAllRoles());
         return "admin/index";
     }
 
@@ -52,10 +53,7 @@ public class AdminController {
 
     @GetMapping("/edit")
     public String showEditForm(@RequestParam Long id, Model model) {
-        User user = userService.findById(id).orElse(null);
-        if (user == null) {
-            return "redirect:/admin?error=notfound";
-        }
+        User user = userService.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
         model.addAttribute("user", user);
         model.addAttribute("allRoles", roleService.getAllRoles());
         return "admin/edit";

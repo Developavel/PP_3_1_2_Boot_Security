@@ -14,11 +14,11 @@ import java.util.Set;
 public interface UserService {
     List<User> listUsers();
 
-    Optional<User> findById(int id);
+    Optional<User> findById(Long id);
 
-    void create(User user, Set<Integer> roleIds);
+    void create(User user, Set<Long> roleIds);
 
-    void update(User user, Set<Integer> roleIds, String newPassword);
+    void update(User user, Set<Long> roleIds, String newPassword);
 
-    void delete(int id);
+    void delete(Long id);
 }

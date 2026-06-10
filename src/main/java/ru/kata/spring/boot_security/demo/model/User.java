@@ -21,14 +21,13 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Set;
 
 /**
  * Сущность пользователя, реализующая {@link UserDetails} для интеграции со Spring Security.
- * Содержит учётные данные (username, password) и фамилию (lastname),
+ * Содержит учётные данные (email, password), персональную информацию (firstName, lastName, age),
  * список ролей и флаги состояния учётной записи (всегда активна).
- * Связь с ролями — многие ко многим, с каскадированием PERSIST и MERGE.
+ * Связь с ролями (многие ко многим), с каскадированием PERSIST и MERGE.
  */
 @Getter
 @Setter
@@ -42,21 +41,24 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @ToString.Include
-    private int id;
+    private Long id;
 
-    @Column(name = "username", unique = true, nullable = false)
-    @EqualsAndHashCode.Include
+    @Column(name = "first_name", nullable = false)
     @ToString.Include
-    private String username;
+    private String firstName;
 
-    @Column(name = "lastname", nullable = false)
-    private String lastname;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(name = "age")
+    private int age;
+
+    @Column(name = "email", unique = true, nullable = false)
+    @EqualsAndHashCode.Include
+    private String email;
 
     @Column(name = "password", nullable = false)
     private String password;
-
-//    @Column(name = "age", nullable = false)
-//    private int age;   // TODO
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "user_roles",
@@ -64,11 +66,23 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    public User(String username, String lastname, String password, Set<Role> roles) {
-        this.username = username;
-        this.lastname = lastname;
+    public User(String firstName, String lastName, int age, String email, String password, Set<Role> roles) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.email = email;
         this.password = password;
         this.roles = roles;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;   // email используется как логин
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
     }
 
     @Override

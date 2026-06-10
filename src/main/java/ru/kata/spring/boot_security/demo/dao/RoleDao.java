@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface RoleDao {
     List<Role> listRoles();
 
-    Optional<Role> findById(int id);
+    Optional<Role> findById(Long id);
 
     Optional<Role> findByName(String name);
 

@@ -32,7 +32,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Optional<Role> findById(int id) {
+    public Optional<Role> findById(Long id) {
         return roleDao.findById(id);
     }
 

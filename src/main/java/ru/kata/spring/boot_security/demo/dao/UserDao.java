@@ -7,17 +7,17 @@ import java.util.Optional;
 
 /**
  * DAO-интерфейс для доступа к данным пользователей.
- * Определяет методы для CRUD-операций и поиска пользователей по идентификатору или имени.
+ * Определяет методы для CRUD-операций и поиска пользователей по идентификатору или email.
  * Все методы, возвращающие Optional, позволяют безопасно обрабатывать отсутствие пользователя.
  */
 public interface UserDao {
     List<User> listUsers();
 
-    Optional<User> findById(int id);
+    Optional<User> findById(Long id);
 
-    Optional<User> findByUsername(String username);
+    Optional<User> findByEmail(String email);
 
     void save(User user);
 
-    void delete(int id);
+    void delete(Long id);
 }

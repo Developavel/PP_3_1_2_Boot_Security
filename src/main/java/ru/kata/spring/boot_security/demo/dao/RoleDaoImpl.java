@@ -29,14 +29,14 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public Optional<Role> findById(int id) {
+    public Optional<Role> findById(Long id) {
         return Optional.ofNullable(entityManager.find(Role.class, id));
     }
 
     @Override
     @Transactional
     public void save(Role role) {
-        if (role.getId() == 0) {
+        if (role.getId() == null) {
             entityManager.persist(role);
         } else {
             entityManager.merge(role);

@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 
 /**
- * Сервис для загрузки данных пользователя по имени пользователя (username).
+ * Сервис для загрузки данных пользователя по email (логин).
  * Реализует контракт Spring Security {@link UserDetailsService}.
  * Используется при аутентификации для получения пользователя из базы данных.
  */
@@ -23,8 +23,8 @@ public class UserDetailsImpl implements UserDetailsService {
 
     @Override
     @Transactional
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userDao.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Пользователь '" + username + "' не найден!"));
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userDao.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Пользователь c логином '" + email + "' не найден!"));
     }
 }

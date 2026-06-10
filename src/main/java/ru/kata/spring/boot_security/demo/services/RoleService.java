@@ -16,7 +16,7 @@ public interface RoleService {
 
     Optional<Role> findByName(String name);
 
-    Optional<Role> findById(int id);
+    Optional<Role> findById(Long id);
 
     Role getDefaultRole();
 }

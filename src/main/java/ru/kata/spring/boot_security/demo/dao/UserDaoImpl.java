@@ -13,9 +13,9 @@ import java.util.Optional;
 /**
  * Реализация DAO для сущности {@link User}.
  * Использует {@link EntityManager} для выполнения запросов к базе данных.
- * Методы поиска ({@link #findById}, {@link #findByUsername}) используют JOIN FETCH
+ * Методы поиска ({@link #findById}, {@link #findByEmail}) используют JOIN FETCH
  * для загрузки ролей в одной транзакции и возвращают {@link Optional}.
- * Метод {@link #save} использует merge для поддержки как вставки, так и обновления.
+ * Метод {@link #save}: если id == null, тогда persist(добавление новой записи) иначе merge (обновление).
  * Метод {@link #delete} сначала находит пользователя, затем удаляет.
  */
 @Repository
@@ -32,7 +32,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findById(int id) {
+    public Optional<User> findById(Long id) {
         try {
             User user = entityManager.createQuery(
                             "SELECT DISTINCT u FROM User u JOIN FETCH u.roles WHERE u.id = :id", User.class)
@@ -45,11 +45,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findByUsername(String username) {
+    public Optional<User> findByEmail(String email) {
         try {
             User user = entityManager.createQuery(
-                            "SELECT DISTINCT u FROM User u JOIN FETCH u.roles WHERE u.username = :username", User.class)
-                    .setParameter("username", username)
+                            "SELECT DISTINCT u FROM User u JOIN FETCH u.roles WHERE u.email = :email", User.class)
+                    .setParameter("email", email)
                     .getSingleResult();
             return Optional.of(user);
         } catch (NoResultException e) {
@@ -65,7 +65,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     @Transactional
-    public void delete(int id) {
+    public void delete(Long id) {
         findById(id).ifPresent(entityManager::remove);
     }
 }

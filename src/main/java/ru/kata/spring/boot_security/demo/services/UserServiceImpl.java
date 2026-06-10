@@ -37,13 +37,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(int id) {
+    public Optional<User> findById(Long id) {
         return userDao.findById(id);
     }
 
     @Override
     @Transactional
-    public void create(User user, Set<Integer> roleIds) {
+    public void create(User user, Set<Long> roleIds) {
         if (roleIds == null || roleIds.isEmpty()) {
             user.setRoles(Set.of(roleService.getDefaultRole()));
         } else {
@@ -55,14 +55,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void update(User user, Set<Integer> roleIds, String newPassword) {
+    public void update(User user, Set<Long> roleIds, String newPassword) {
         if (roleIds == null || roleIds.isEmpty()) {
             throw new IllegalArgumentException("Пользователь должен иметь как минимум одну роль!");
         }
-        User existing = findById(user.getId())
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден!"));
-        existing.setUsername(user.getUsername());
-        existing.setLastname(user.getLastname());
+        User existing = findById(user.getId()).orElseThrow(() -> new RuntimeException("Пользователь не найден!"));
+        existing.setFirstName(user.getFirstName());
+        existing.setLastName(user.getLastName());
+        existing.setAge(user.getAge());
+        existing.setEmail(user.getEmail());
+
         if (newPassword != null && !newPassword.isEmpty()) {
             existing.setPassword(passwordEncoder.encode(newPassword));
         }
@@ -72,14 +74,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void delete(int id) {
+    public void delete(Long id) {
         userDao.delete(id);
     }
 
-    private Set<Role> convertIdsToRoles(Set<Integer> roleIds) {
+    private Set<Role> convertIdsToRoles(Set<Long> roleIds) {
         Set<Role> roles = new HashSet<>();
         if (roleIds != null) {
-            for (Integer id : roleIds) {
+            for (Long id : roleIds) {
                 roleService.findById(id).ifPresent(roles::add);
             }
         }
