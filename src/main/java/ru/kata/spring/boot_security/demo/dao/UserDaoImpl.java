@@ -6,7 +6,6 @@ import ru.kata.spring.boot_security.demo.model.User;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,13 +57,11 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    @Transactional
     public void save(User user) {
         entityManager.merge(user);
     }
 
     @Override
-    @Transactional
     public void delete(Long id) {
         findById(id).ifPresent(entityManager::remove);
     }

@@ -34,7 +34,6 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    @Transactional
     public void save(Role role) {
         if (role.getId() == null) {
             entityManager.persist(role);
