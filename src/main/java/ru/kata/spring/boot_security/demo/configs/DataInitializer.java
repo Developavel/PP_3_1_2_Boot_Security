@@ -20,9 +20,9 @@ import java.util.Set;
  * При старте приложения создаёт роли ROLE_USER и ROLE_ADMIN (если их нет),
  * а также администратора email admin@mail.ru, если он отсутствует.
  */
-@Slf4j
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
+@Slf4j
 public class DataInitializer implements CommandLineRunner {
 
     private final UserDao userDao;

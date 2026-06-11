@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,13 +15,10 @@ import ru.kata.spring.boot_security.demo.dao.UserDao;
  * Используется при аутентификации для получения пользователя из базы данных.
  */
 @Service
+@RequiredArgsConstructor
 public class UserDetailsImpl implements UserDetailsService {
 
     private final UserDao userDao;
-
-    public UserDetailsImpl(UserDao userDao) {
-        this.userDao = userDao;
-    }
 
     @Override
     @Transactional

@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,23 +15,18 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Cервис для управления пользователями.
+ * Сервис для управления пользователями.
  * Содержит бизнес-логику: создание, обновление, удаление пользователей,
  * назначение ролей, кодирование пароля, проверку наличия ролей при обновлении.
  */
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
-
-    public UserServiceImpl(UserDao userDao, RoleService roleService, PasswordEncoder passwordEncoder) {
-        this.userDao = userDao;
-        this.roleService = roleService;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @Override
     public List<User> listUsers() {
