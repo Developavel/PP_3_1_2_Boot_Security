@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<div th:fragment="navbar">
+  <div class="top-navbar">
+    <div>
+      <strong>
+        <span sec:authentication="name">admin@mail.ru</span>
+      </strong>
+      with roles:
+      <span th:each="role, iterStat : ${#authentication.authorities}">
+                <span th:text="${#strings.replace(role.authority, 'ROLE_', '')}"></span><span th:unless="${iterStat.last}">, </span>
+            </span>
+    </div>
+
+    <form th:action="@{/logout}" method="post" class="m-0">
+      <button type="submit" class="btn btn-link logout-link">
+        Logout
+      </button>
+    </form>
+  </div>
+</div>
+</html>

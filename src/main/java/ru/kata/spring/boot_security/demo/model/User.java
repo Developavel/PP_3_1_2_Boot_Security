@@ -22,6 +22,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Сущность пользователя, реализующая {@link UserDetails} для интеграции со Spring Security.
@@ -108,5 +109,15 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getRolesAsString() {
+        if (roles == null || roles.isEmpty()) {
+            return "";
+        }
+        return roles.stream()
+                .map(Role::getName)
+                .map(name -> name.replace("ROLE_", ""))
+                .collect(Collectors.joining(", "));
     }
 }
