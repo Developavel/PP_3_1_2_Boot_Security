@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -12,7 +13,6 @@ import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-
 
 import java.util.Set;
 
@@ -30,6 +30,21 @@ public class DataInitializer implements CommandLineRunner {
     private final UserDao userDao;
     private final RoleDao roleDao;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${app.admin.email}")
+    private String adminEmail;
+
+    @Value("${app.admin.password}")
+    private String adminPassword;
+
+    @Value("${app.admin.first-name}")
+    private String adminFirstName;
+
+    @Value("${app.admin.last-name}")
+    private String adminLastName;
+
+    @Value("${app.admin.age}")
+    private int adminAge;
 
     @Override
     @Transactional
@@ -49,14 +64,13 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Создана роль ROLE_ADMIN");
         }
 
-        String adminEmail = "admin@mail.ru";
         if (userDao.findByEmail(adminEmail).isEmpty()) {
             User admin = new User(
-                    "Admin",
-                    "Adminov",
-                    36,
+                    adminFirstName,
+                    adminLastName,
+                    adminAge,
                     adminEmail,
-                    passwordEncoder.encode("admin"),
+                    passwordEncoder.encode(adminPassword),
                     Set.of(roleAdmin, roleUser));
             userDao.save(admin);
             log.info("Создан администратор с email: {}", adminEmail);

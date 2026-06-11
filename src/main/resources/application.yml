@@ -1,0 +1,25 @@
+# MySQL
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/mydb
+    username: root
+    password: root
+
+  # Hibernate
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        show-sql: false
+    hibernate:
+      ddl-auto: update
+
+# Admin initialization
+app:
+  admin:
+    email: admin@mail.ru
+    password: admin
+    first-name: Admin
+    last-name: Adminov
+    age: 36
