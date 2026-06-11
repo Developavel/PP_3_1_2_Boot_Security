@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.EntityNotFoundException;
 
 /**
  * Сервис для управления пользователями.
@@ -56,7 +57,8 @@ public class UserServiceImpl implements UserService {
         if (roleIds == null || roleIds.isEmpty()) {
             throw new IllegalArgumentException("Пользователь должен иметь как минимум одну роль!");
         }
-        User existing = findById(user.getId()).orElseThrow(() -> new RuntimeException("Пользователь не найден!"));
+        User existing = findById(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден! ID: " + user.getId()));
         existing.setFirstName(user.getFirstName());
         existing.setLastName(user.getLastName());
         existing.setAge(user.getAge());

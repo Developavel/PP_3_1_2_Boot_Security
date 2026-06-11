@@ -13,7 +13,7 @@ import java.util.Set;
 
 /**
  * Контроллер панели администратора.
- * Обрабатывает CRUD-операции для пользователей: просмотр, создание, редактирование и удаление
+ * Обрабатывает CRUD-операции для пользователей.
  */
 @Controller
 @RequestMapping("/admin")
@@ -21,50 +21,26 @@ import java.util.Set;
 public class AdminController {
 
     private static final String REDIRECT_ADMIN = "redirect:/admin";
-    private static final String ADMIN_INDEX = "admin/index";
-    private static final String ADMIN_NEW = "admin/new";
+    private static final String ADMIN_PAGE = "admin";
 
     private final UserService userService;
     private final RoleService roleService;
 
-    /**
-     * Отображает список всех пользователей с их ролями.
-     */
     @GetMapping
-    public String showUsers(Model model) {
+    public String adminPage(Model model) {
         model.addAttribute("users", userService.listUsers());
-        addRolesToModel(model);
-        return ADMIN_INDEX;
+        model.addAttribute("newUser", new User());
+        model.addAttribute("allRoles", roleService.getAllRoles());
+        return ADMIN_PAGE;
     }
 
-    /**
-     * Отображает форму для создания нового пользователя.
-     */
-    @GetMapping("/new")
-    public String showCreateForm(Model model) {
-        model.addAttribute("user", new User());
-        addRolesToModel(model);
-        return ADMIN_NEW;
-    }
-
-    /**
-     * Создаёт нового пользователя.
-     * @param user данные из формы
-     * @param roleIds идентификаторы выбранных ролей
-     */
     @PostMapping
-    public String create(@ModelAttribute User user,
+    public String create(@ModelAttribute("newUser") User user,
                          @RequestParam(required = false) Set<Long> roleIds) {
         userService.create(user, safeRoles(roleIds));
         return REDIRECT_ADMIN;
     }
 
-    /**
-     * Обновляет данные существующего пользователя.
-     * @param user обновлённые данные
-     * @param roleIds идентификаторы выбранных ролей
-     * @param newPassword новый пароль (если указан)
-     */
     @PostMapping("/edit")
     public String update(@ModelAttribute User user,
                          @RequestParam(required = false) Set<Long> roleIds,
@@ -73,26 +49,12 @@ public class AdminController {
         return REDIRECT_ADMIN;
     }
 
-    /**
-     * Удаляет пользователя по идентификатору.
-     */
     @PostMapping("/delete")
     public String delete(@RequestParam Long id) {
         userService.delete(id);
         return REDIRECT_ADMIN;
     }
 
-    /**
-     * Добавляет в модель список всех доступных ролей (для отображения в формах).
-     */
-    private void addRolesToModel(Model model) {
-        model.addAttribute("allRoles", roleService.getAllRoles());
-    }
-
-    /**
-     * Преобразует nullable Set ролей в безопасный (не null, не пустой).
-     * Если roleIds == null, возвращает пустой Set.
-     */
     private Set<Long> safeRoles(Set<Long> roleIds) {
         return roleIds == null ? Collections.emptySet() : roleIds;
     }
