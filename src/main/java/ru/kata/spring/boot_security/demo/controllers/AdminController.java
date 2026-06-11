@@ -51,14 +51,6 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/edit")
-    public String showEditForm(@RequestParam Long id, Model model) {
-        User user = userService.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
-        model.addAttribute("user", user);
-        model.addAttribute("allRoles", roleService.getAllRoles());
-        return "admin/edit";
-    }
-
     @PostMapping("/edit")
     public String update(@ModelAttribute User user,
                          @RequestParam(value = "roleIds", required = false) Set<Long> roleIds,
@@ -67,7 +59,7 @@ public class AdminController {
         return "redirect:/admin";
     }
 
-    @GetMapping("/delete")
+    @PostMapping("/delete")
     public String delete(@RequestParam Long id) {
         userService.delete(id);
         return "redirect:/admin";

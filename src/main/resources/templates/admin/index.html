@@ -205,14 +205,14 @@
                                         Delete
                                     </button>
                                 </td>
-                        </table>
+                            </tr>
 
-                        <tr th:if="${users.isEmpty()}">
-                            <td colspan="8" class="text-center">
-                                No users found
-                            </td>
-                        </tr>
-                        </tbody>
+                            <tr th:if="${users.isEmpty()}">
+                                <td colspan="8" class="text-center">
+                                    No users found
+                                </td>
+                            </tr>
+                            </tbody>
                         </table>
                     </div>
 
@@ -278,7 +278,7 @@
     </div>
 </div>
 
-<!-- Модальное окно подтверждения удаления (в стиле полей) -->
+<!-- Модальное окно подтверждения удаления (с формой POST) -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -314,7 +314,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <a id="deleteConfirmLink" class="btn btn-danger">Delete</a>
+                <form th:action="@{/admin/delete}" method="post" style="display: inline;">
+                    <input type="hidden" name="id" id="deleteFormUserId" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
             </div>
         </div>
     </div>
@@ -379,8 +382,8 @@
         const rolesWithoutPrefix = userRoles ? userRoles.replace(/ROLE_/g, '') : '';
         document.getElementById('deleteUserRoles').value = rolesWithoutPrefix;
 
-        const deleteLink = document.getElementById('deleteConfirmLink');
-        deleteLink.href = '/admin/delete?id=' + userId;
+        // Устанавливаем значение скрытого поля формы удаления
+        document.getElementById('deleteFormUserId').value = userId;
     });
 </script>
 
