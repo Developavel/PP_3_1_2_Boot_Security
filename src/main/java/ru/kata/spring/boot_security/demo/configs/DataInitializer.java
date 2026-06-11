@@ -16,9 +16,9 @@ import ru.kata.spring.boot_security.demo.model.User;
 import java.util.Set;
 
 /**
- * Компонент для начальной инициализации данных.
- * При старте приложения создаёт роли ROLE_USER и ROLE_ADMIN (если их нет),
- * а также администратора email admin@mail.ru, если он отсутствует.
+ * Инициализация начальных данных: роли ROLE_USER, ROLE_ADMIN и учётная запись администратора.
+ * Данные администратора загружаются из application.yml.
+ * Инициализация выполняется только при отсутствии соответствующих записей в БД.
  */
 @Component
 @RequiredArgsConstructor
@@ -47,20 +47,8 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
-
-        Role roleUser = roleDao.findByName("ROLE_USER").orElse(null);
-        if (roleUser == null) {
-            roleUser = new Role("ROLE_USER");
-            roleDao.save(roleUser);
-            log.info("Создана роль ROLE_USER");
-        }
-
-        Role roleAdmin = roleDao.findByName("ROLE_ADMIN").orElse(null);
-        if (roleAdmin == null) {
-            roleAdmin = new Role("ROLE_ADMIN");
-            roleDao.save(roleAdmin);
-            log.info("Создана роль ROLE_ADMIN");
-        }
+        Role roleUser = findOrCreateRole("ROLE_USER");
+        Role roleAdmin = findOrCreateRole("ROLE_ADMIN");
 
         if (userDao.findByEmail(adminEmail).isEmpty()) {
             User admin = new User(
@@ -75,5 +63,14 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         log.info("Инициализация завершена");
+    }
+
+    private Role findOrCreateRole(String roleName) {
+        return roleDao.findByName(roleName).orElseGet(() -> {
+            Role role = new Role(roleName);
+            roleDao.save(role);
+            log.info("Создана роль {}", roleName);
+            return role;
+        });
     }
 }
