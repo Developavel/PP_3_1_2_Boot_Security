@@ -1,8 +1,7 @@
 package ru.kata.spring.boot_security.demo.configs;
 
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
@@ -21,11 +20,10 @@ import java.util.Set;
  * При старте приложения создаёт роли ROLE_USER и ROLE_ADMIN (если их нет),
  * а также администратора email admin@mail.ru, если он отсутствует.
  */
+@Slf4j
 @RequiredArgsConstructor
 @Component
 public class DataInitializer implements CommandLineRunner {
-
-    private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
     private final UserDao userDao;
     private final RoleDao roleDao;
