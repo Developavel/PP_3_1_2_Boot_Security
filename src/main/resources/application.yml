@@ -19,7 +19,7 @@ spring:
 app:
   admin:
     email: admin@mail.ru
-    password: admin.js
+    password: admin
     first-name: Admin
     last-name: Adminov
     age: 36

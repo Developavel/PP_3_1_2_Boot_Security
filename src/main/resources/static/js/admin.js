@@ -22,8 +22,8 @@ function fillDeleteModal(button) {
         if (element) element.value = button.getAttribute(`data-user-${field}`);
     });
 
-    const roles = button.getAttribute('data-user-roles')?.replace(/ROLE_/g, '') || '';
-    document.getElementById('deleteUserRoles').value = roles;
+    // Убираем префикс ROLE_ и устанавливаем значение напрямую
+    document.getElementById('deleteUserRoles').value = button.getAttribute('data-user-roles')?.replace(/ROLE_/g, '') || '';
     document.getElementById('deleteFormUserId').value = button.getAttribute('data-user-id');
 }
 
