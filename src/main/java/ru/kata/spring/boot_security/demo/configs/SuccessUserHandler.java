@@ -12,10 +12,9 @@ import java.util.Set;
 
 /**
  * Обработчик успешной аутентификации, реализует интерфейс {@link AuthenticationSuccessHandler}.
- * При успешном входе анализирует роли аутентифицированного пользователя:
- * ROLE_ADMIN редирект на /admin
- * ROLE_USER редирект на /user
- * Иначе редирект на главную страницу /
+ * Администратор направляется в панель управления (/admin)
+ * Обычный пользователь — на свою страницу профиля (/user)
+ * Если роли не определены (не должно происходить) — на главную (/)
  */
 @Component
 public class SuccessUserHandler implements AuthenticationSuccessHandler {

@@ -11,7 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import ru.kata.spring.boot_security.demo.services.UserDetailsImpl;
+import ru.kata.spring.boot_security.demo.services.UserDetailsServiceImpl;
 
 /**
  * Конфигурация Spring Security.
@@ -23,7 +23,7 @@ import ru.kata.spring.boot_security.demo.services.UserDetailsImpl;
 public class SecurityConfig {
 
     private final SuccessUserHandler successUserHandler;
-    private final UserDetailsImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

@@ -16,7 +16,7 @@ import ru.kata.spring.boot_security.demo.dao.UserDao;
  */
 @Service
 @RequiredArgsConstructor
-public class UserDetailsImpl implements UserDetailsService {
+public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserDao userDao;
 
