@@ -17,7 +17,9 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div th:replace="~{fragments/sidebar :: sidebar(activePage='user')}"></div>
+        <div class="col-2">
+            <div th:replace="~{fragments/sidebar :: sidebar(activePage='user')}"></div>
+        </div>
 
         <div class="col-10 content">
             <h1 class="page-title">User information-page</h1>
@@ -58,7 +60,7 @@
                                 <td th:text="${user.age}">－</td>
                                 <td th:text="${user.email}">－</td>
                                 <td th:text="${user.rolesAsString}">－</td>
-                            </tr>
+                                </td>
                             </tbody>
                         </table>
                     </div>

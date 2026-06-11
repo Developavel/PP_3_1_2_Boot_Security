@@ -1,6 +1,14 @@
 /* Базовые стили */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     background-color: #f8f9fa;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Верхняя панель */
@@ -12,6 +20,7 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 0 20px;
+    flex-shrink: 0;
 }
 
 .top-navbar .logout-link {
@@ -23,12 +32,24 @@ body {
     color: #ccc;
 }
 
-/* Сайдбар */
+/* Контейнер для основного контента */
+.container-fluid {
+    flex: 1;
+    padding: 0 !important;
+}
+
+/* Ряд с сайдбаром и контентом */
+.row {
+    height: 100%;
+    margin: 0 !important;
+}
+
+/* Сайдбар - без управления шириной (шириной управляет Bootstrap col-2) */
 .sidebar {
-    min-height: calc(100vh - 60px);
     background: white;
     border-right: 1px solid #dee2e6;
     padding-top: 20px;
+    height: 100%;
 }
 
 .sidebar .nav-link {
