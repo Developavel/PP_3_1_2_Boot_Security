@@ -1,85 +1,24 @@
-/* Базовые стили */
-html, body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
+html,
 body {
-    background-color: #f8f9fa;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Верхняя панель */
-.top-navbar {
-    background-color: #343a40;
-    color: white;
-    height: 60px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
-    flex-shrink: 0;
-}
-
-.top-navbar .logout-link {
-    color: white;
-    text-decoration: none;
-}
-
-.top-navbar .logout-link:hover {
-    color: #ccc;
-}
-
-/* Сайдбар - без управления шириной (шириной управляет Bootstrap col-2) */
-.sidebar {
-    background: white;
-    border-right: 1px solid #dee2e6;
-    padding-top: 20px;
     height: 100%;
 }
 
-.sidebar .nav-link {
-    color: #0d6efd;
+.sidebar {
+    min-height: calc(100vh - 56px);
+    border-right: 1px solid #dee2e6;
 }
 
 .sidebar .nav-link.active {
     background-color: #0d6efd;
-    color: white;
+    color: #fff;
 }
 
-/* Основной контент */
 .content {
-    padding: 30px;
-}
-
-.page-title {
-    font-size: 48px;
-    font-weight: 500;
-    margin-bottom: 20px;
-}
-
-/* Карточки */
-.card-header {
     background-color: #f8f9fa;
-    font-size: 28px;
-    font-weight: 500;
+    min-height: calc(100vh - 56px);
 }
 
-/* Центрирование форм */
 .form-wrapper {
-    max-width: 400px;
+    max-width: 420px;
     margin: 0 auto;
-}
-
-.form-wrapper label {
-    font-weight: bold;
-    text-align: center;
-    width: 100%;
-}
-
-.form-wrapper input,
-.form-wrapper select {
-    text-align: center;
 }

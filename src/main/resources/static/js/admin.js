@@ -1,45 +1,68 @@
-// Общая функция для заполнения модального окна редактирования
+const USER_FIELDS = [
+    'id',
+    'firstName',
+    'lastName',
+    'age',
+    'email'
+];
+
+function fillFields(prefix, button) {
+
+    USER_FIELDS.forEach(field => {
+
+        const id =
+            prefix +
+            field.charAt(0).toUpperCase() +
+            field.slice(1);
+
+        const element = document.getElementById(id);
+
+        if (element) {
+            element.value =
+                button.dataset[
+                'user' +
+                field.charAt(0).toUpperCase() +
+                field.slice(1)
+                    ];
+        }
+    });
+}
+
 function fillEditModal(button) {
-    const fields = ['id', 'firstName', 'lastName', 'age', 'email'];
-    fields.forEach(field => {
-        const element = document.getElementById(`edit${field.charAt(0).toUpperCase() + field.slice(1)}`);
-        if (element) element.value = button.getAttribute(`data-user-${field}`);
+
+    fillFields('edit', button);
+
+    const roleSelect =
+        document.getElementById('editRoleIds');
+
+    const selectedRoleIds =
+        button.dataset.userRolesIds?.split(',') || [];
+
+    [...roleSelect.options].forEach(option => {
+        option.selected =
+            selectedRoleIds.includes(option.value);
     });
-
-    const roleSelect = document.getElementById('editRoleIds');
-    const selectedRoleIds = button.getAttribute('data-user-roles-ids')?.split(',') || [];
-
-    for (let i = 0; i < roleSelect.options.length; i++) {
-        roleSelect.options[i].selected = selectedRoleIds.includes(roleSelect.options[i].value);
-    }
 }
 
-// Общая функция для заполнения модального окна удаления
 function fillDeleteModal(button) {
-    const fields = ['id', 'firstName', 'lastName', 'age', 'email'];
-    fields.forEach(field => {
-        const element = document.getElementById(`deleteUser${field.charAt(0).toUpperCase() + field.slice(1)}`);
-        if (element) element.value = button.getAttribute(`data-user-${field}`);
-    });
 
-    // Убираем префикс ROLE_ и устанавливаем значение напрямую
-    document.getElementById('deleteUserRoles').value = button.getAttribute('data-user-roles')?.replace(/ROLE_/g, '') || '';
-    document.getElementById('deleteFormUserId').value = button.getAttribute('data-user-id');
+    fillFields('deleteUser', button);
+
+    document.getElementById('deleteUserRoles').value =
+        button.dataset.userRoles
+            ?.replace(/ROLE_/g, '') || '';
+
+    document.getElementById('deleteFormUserId').value =
+        button.dataset.userId;
 }
 
-// Инициализация модальных окон
-document.addEventListener('DOMContentLoaded', function() {
-    const editModal = document.getElementById('editModal');
-    if (editModal) {
-        editModal.addEventListener('show.bs.modal', function(event) {
-            fillEditModal(event.relatedTarget);
-        });
-    }
+document.addEventListener('DOMContentLoaded', () => {
 
-    const deleteModal = document.getElementById('deleteModal');
-    if (deleteModal) {
-        deleteModal.addEventListener('show.bs.modal', function(event) {
-            fillDeleteModal(event.relatedTarget);
-        });
-    }
+    document.getElementById('editModal')
+        ?.addEventListener('show.bs.modal',
+            e => fillEditModal(e.relatedTarget));
+
+    document.getElementById('deleteModal')
+        ?.addEventListener('show.bs.modal',
+            e => fillDeleteModal(e.relatedTarget));
 });
