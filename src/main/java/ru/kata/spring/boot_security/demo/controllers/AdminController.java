@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
@@ -21,38 +22,38 @@ import java.util.Set;
 public class AdminController {
 
     private static final String REDIRECT_ADMIN = "redirect:/admin";
-    private static final String ADMIN_PAGE = "admin";
 
     private final UserService userService;
     private final RoleService roleService;
 
     @GetMapping
-    public String adminPage(Model model) {
-        model.addAttribute("users", userService.listUsers());
-        model.addAttribute("newUser", new User());
-        model.addAttribute("allRoles", roleService.getAllRoles());
-        return ADMIN_PAGE;
+    public ModelAndView adminPage() {
+        ModelAndView modelAndView = new ModelAndView("admin");
+        modelAndView.addObject("users", userService.listUsers());
+        modelAndView.addObject("newUser", new User());
+        modelAndView.addObject("allRoles", roleService.getAllRoles());
+        return modelAndView;
     }
 
     @PostMapping
-    public String create(@ModelAttribute("newUser") User user,
+    public ModelAndView create(@ModelAttribute("newUser") User user,
                          @RequestParam(required = false) Set<Long> roleIds) {
         userService.create(user, safeRoles(roleIds));
-        return REDIRECT_ADMIN;
+        return new ModelAndView(REDIRECT_ADMIN);
     }
 
     @PostMapping("/edit")
-    public String update(@ModelAttribute User user,
+    public ModelAndView update(@ModelAttribute User user,
                          @RequestParam(required = false) Set<Long> roleIds,
                          @RequestParam(required = false) String newPassword) {
         userService.update(user, safeRoles(roleIds), newPassword);
-        return REDIRECT_ADMIN;
+        return new ModelAndView(REDIRECT_ADMIN);
     }
 
     @PostMapping("/delete")
-    public String delete(@RequestParam Long id) {
+    public ModelAndView delete(@RequestParam Long id) {
         userService.delete(id);
-        return REDIRECT_ADMIN;
+        return new ModelAndView(REDIRECT_ADMIN);
     }
 
     private Set<Long> safeRoles(Set<Long> roleIds) {

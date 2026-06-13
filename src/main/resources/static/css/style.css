@@ -32,18 +32,6 @@ body {
     color: #ccc;
 }
 
-/* Контейнер для основного контента */
-.container-fluid {
-    flex: 1;
-    padding: 0 !important;
-}
-
-/* Ряд с сайдбаром и контентом */
-.row {
-    height: 100%;
-    margin: 0 !important;
-}
-
 /* Сайдбар - без управления шириной (шириной управляет Bootstrap col-2) */
 .sidebar {
     background: white;

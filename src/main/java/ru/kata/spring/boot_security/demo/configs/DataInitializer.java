@@ -2,7 +2,6 @@ package ru.kata.spring.boot_security.demo.configs;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,19 +14,17 @@ import ru.kata.spring.boot_security.demo.model.User;
 
 import java.util.Set;
 
-/**
- * Инициализация начальных данных: роли ROLE_USER, ROLE_ADMIN и учётная запись администратора.
- * Данные администратора загружаются из application.yml.
- * Инициализация выполняется только при отсутствии соответствующих записей в БД.
- */
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class DataInitializer implements CommandLineRunner {
 
     private final UserDao userDao;
     private final RoleDao roleDao;
     private final PasswordEncoder passwordEncoder;
+
+    @Value("${spring.jpa.hibernate.ddl-auto}")
+    private String ddlAuto;
 
     @Value("${app.admin.email}")
     private String adminEmail;
@@ -47,30 +44,51 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
+
         Role roleUser = findOrCreateRole("ROLE_USER");
         Role roleAdmin = findOrCreateRole("ROLE_ADMIN");
 
-        if (userDao.findByEmail(adminEmail).isEmpty()) {
-            User admin = new User(
-                    adminFirstName,
-                    adminLastName,
-                    adminAge,
-                    adminEmail,
-                    passwordEncoder.encode(adminPassword),
-                    Set.of(roleAdmin, roleUser));
-            userDao.save(admin);
-            log.info("Создан администратор с email: {}", adminEmail);
+        if (shouldCreateAdmin()) {
+            createAdmin(roleAdmin, roleUser);
         }
 
         log.info("Инициализация завершена");
     }
 
+    private boolean shouldCreateAdmin() {
+        return "create".equalsIgnoreCase(ddlAuto)
+                || "create-drop".equalsIgnoreCase(ddlAuto);
+    }
+
+    private void createAdmin(Role roleAdmin, Role roleUser) {
+
+        User admin = new User(
+                adminFirstName,
+                adminLastName,
+                adminAge,
+                adminEmail,
+                passwordEncoder.encode(adminPassword),
+                Set.of(roleAdmin, roleUser)
+        );
+
+        userDao.save(admin);
+
+        log.info(
+                "Создан администратор с email: {} (ddl-auto={})",
+                adminEmail,
+                ddlAuto
+        );
+    }
+
     private Role findOrCreateRole(String roleName) {
-        return roleDao.findByName(roleName).orElseGet(() -> {
-            Role role = new Role(roleName);
-            roleDao.save(role);
-            log.info("Создана роль {}", roleName);
-            return role;
-        });
+        return roleDao.findByName(roleName)
+                .orElseGet(() -> {
+                    Role role = new Role(roleName);
+                    roleDao.save(role);
+
+                    log.info("Создана роль {}", roleName);
+
+                    return role;
+                });
     }
 }
