@@ -1,15 +1,19 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.Collections;
+import java.util.Set;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.services.RoleService;
 import ru.kata.spring.boot_security.demo.services.UserService;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Контроллер панели администратора.
