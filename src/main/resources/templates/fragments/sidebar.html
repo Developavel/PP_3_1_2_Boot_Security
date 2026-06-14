@@ -1,20 +1,21 @@
+<!-- Боковая навигация -->
 <div th:fragment="sidebar(activePage)"
      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
   <nav class="nav flex-column pt-3">
 
-    <a
-            sec:authorize="hasRole('ADMIN')"
-            class="nav-link"
-            th:classappend="${activePage == 'admin'} ? ' active'"
-            th:href="@{/admin}">
+    <!-- Раздел администратора -->
+    <a sec:authorize="hasRole('ADMIN')"
+       class="nav-link"
+       th:classappend="${activePage == 'admin'} ? ' active'"
+       th:href="@{/admin}">
       Admin
     </a>
 
-    <a
-            class="nav-link"
-            th:classappend="${activePage == 'user'} ? ' active'"
-            th:href="@{/user}">
+    <!-- Личный кабинет пользователя -->
+    <a class="nav-link"
+       th:classappend="${activePage == 'user'} ? ' active'"
+       th:href="@{/user}">
       User
     </a>
 

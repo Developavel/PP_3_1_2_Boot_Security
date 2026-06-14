@@ -1,3 +1,4 @@
+// Общие поля пользователя для модальных окон
 const USER_FIELDS = [
     'firstName',
     'lastName',
@@ -5,6 +6,7 @@ const USER_FIELDS = [
     'email'
 ];
 
+// Установка значения элемента по id
 function setValue(id, value) {
     const element = document.getElementById(id);
 
@@ -13,6 +15,7 @@ function setValue(id, value) {
     }
 }
 
+// Заполнение пользовательских полей формы
 function fillFields(prefix, button) {
 
     USER_FIELDS.forEach(field => {
@@ -28,6 +31,7 @@ function fillFields(prefix, button) {
     });
 }
 
+// Инициализация модального окна редактирования
 function fillEditModal(button) {
 
     setValue(
@@ -54,6 +58,7 @@ function fillEditModal(button) {
     });
 }
 
+// Инициализация модального окна удаления
 function fillDeleteModal(button) {
 
     fillFields('deleteUser', button);
@@ -75,6 +80,7 @@ function fillDeleteModal(button) {
     );
 }
 
+// Подключение обработчиков Bootstrap-модалок
 document.addEventListener('DOMContentLoaded', () => {
 
     document

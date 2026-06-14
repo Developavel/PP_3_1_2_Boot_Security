@@ -1,3 +1,4 @@
+/* Высота верхней панели приложения */
 :root {
     --navbar-height: 56px;
 }
@@ -7,24 +8,29 @@ body {
     height: 100%;
 }
 
+/* Рабочая область под navbar */
 .sidebar,
 .content {
     min-height: calc(100vh - var(--navbar-height));
 }
 
+/* Граница бокового меню */
 .sidebar {
     border-right: 1px solid #dee2e6;
 }
 
+/* Активный пункт навигации */
 .sidebar .nav-link.active {
     color: #fff;
     background-color: #0d6efd;
 }
 
+/* Основной контент страницы */
 .content {
     background-color: #f8f9fa;
 }
 
+/* Ограничение ширины форм */
 .form-wrapper {
     max-width: 420px;
     margin-inline: auto;
