@@ -1,24 +1,31 @@
+:root {
+    --navbar-height: 56px;
+}
+
 html,
 body {
     height: 100%;
 }
 
+.sidebar,
+.content {
+    min-height: calc(100vh - var(--navbar-height));
+}
+
 .sidebar {
-    min-height: calc(100vh - 56px);
     border-right: 1px solid #dee2e6;
 }
 
 .sidebar .nav-link.active {
-    background-color: #0d6efd;
     color: #fff;
+    background-color: #0d6efd;
 }
 
 .content {
     background-color: #f8f9fa;
-    min-height: calc(100vh - 56px);
 }
 
 .form-wrapper {
     max-width: 420px;
-    margin: 0 auto;
+    margin-inline: auto;
 }

@@ -1,34 +1,44 @@
 const USER_FIELDS = [
-    'id',
     'firstName',
     'lastName',
     'age',
     'email'
 ];
 
+function setValue(id, value) {
+    const element = document.getElementById(id);
+
+    if (element) {
+        element.value = value ?? '';
+    }
+}
+
 function fillFields(prefix, button) {
 
     USER_FIELDS.forEach(field => {
 
-        const id =
-            prefix +
+        const fieldName =
             field.charAt(0).toUpperCase() +
             field.slice(1);
 
-        const element = document.getElementById(id);
-
-        if (element) {
-            element.value =
-                button.dataset[
-                'user' +
-                field.charAt(0).toUpperCase() +
-                field.slice(1)
-                    ];
-        }
+        setValue(
+            `${prefix}${fieldName}`,
+            button.dataset[`user${fieldName}`]
+        );
     });
 }
 
 function fillEditModal(button) {
+
+    setValue(
+        'editUserId',
+        button.dataset.userId
+    );
+
+    setValue(
+        'editUserIdDisplay',
+        button.dataset.userId
+    );
 
     fillFields('edit', button);
 
@@ -36,7 +46,7 @@ function fillEditModal(button) {
         document.getElementById('editRoleIds');
 
     const selectedRoleIds =
-        button.dataset.userRolesIds?.split(',') || [];
+        button.dataset.userRolesIds?.split(',') ?? [];
 
     [...roleSelect.options].forEach(option => {
         option.selected =
@@ -48,21 +58,36 @@ function fillDeleteModal(button) {
 
     fillFields('deleteUser', button);
 
-    document.getElementById('deleteUserRoles').value =
-        button.dataset.userRoles
-            ?.replace(/ROLE_/g, '') || '';
+    setValue(
+        'deleteUserId',
+        button.dataset.userId
+    );
 
-    document.getElementById('deleteFormUserId').value =
-        button.dataset.userId;
+    setValue(
+        'deleteUserRoles',
+        button.dataset.userRoles
+            ?.replaceAll('ROLE_', '')
+    );
+
+    setValue(
+        'deleteFormUserId',
+        button.dataset.userId
+    );
 }
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    document.getElementById('editModal')
-        ?.addEventListener('show.bs.modal',
-            e => fillEditModal(e.relatedTarget));
+    document
+        .getElementById('editModal')
+        ?.addEventListener(
+            'show.bs.modal',
+            event => fillEditModal(event.relatedTarget)
+        );
 
-    document.getElementById('deleteModal')
-        ?.addEventListener('show.bs.modal',
-            e => fillDeleteModal(e.relatedTarget));
+    document
+        .getElementById('deleteModal')
+        ?.addEventListener(
+            'show.bs.modal',
+            event => fillDeleteModal(event.relatedTarget)
+        );
 });

@@ -8,13 +8,13 @@
 <body class="bg-light">
 <div class="container">
     <div class="row justify-content-center mt-5">
-        <div class="col-md-4">
-            <!-- 1. Заголовок: убрать text-center, сделать mb-2 (меньше отступ снизу) -->
+        <div class="col-md-4 col-lg-3">
+
             <h3 class="mb-2">Please sign in</h3>
 
             <form method="POST" th:action="@{/process_login}">
-                <!-- 2. Поля ввода: уменьшить mb-3 до mb-2 -->
-                <div class="mb-0.5">
+
+                <div class="mb-2">
                     <input type="email" class="form-control" name="username"
                            placeholder="Email address" required autofocus>
                 </div>
