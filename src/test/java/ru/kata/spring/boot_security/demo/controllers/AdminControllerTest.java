@@ -12,22 +12,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class AdminControllerTest {
+class AdminRestControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void adminPage_ShouldBeOk_ForAdmin() throws Exception {
-        mockMvc.perform(get("/admin"))
+    void getAllUsers_ShouldReturnOk_ForAdmin() throws Exception {
+        mockMvc.perform(get("/api/admin/users"))
                 .andExpect(status().isOk());
     }
 
     @Test
     @WithMockUser(roles = "USER")
-    void adminPage_ShouldBeForbidden_ForUser() throws Exception {
-        mockMvc.perform(get("/admin"))
+    void getAllUsers_ShouldBeForbidden_ForUser() throws Exception {
+        mockMvc.perform(get("/api/admin/users"))
                 .andExpect(status().isForbidden());
     }
 }

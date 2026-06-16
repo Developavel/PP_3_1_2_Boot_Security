@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
         return userDao.findById(id);
     }
@@ -74,6 +75,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void delete(Long id) {
+
+        if (userDao.findById(id).isEmpty()) {
+            throw new EntityNotFoundException(
+                    "Пользователь не найден. ID: " + id);
+        }
+
         userDao.delete(id);
     }
 
@@ -82,8 +89,8 @@ public class UserServiceImpl implements UserService {
             return Set.of();
         }
         return roleIds.stream()
-                .map(roleService::findById)
-                .flatMap(Optional::stream)
+                .map(id -> roleService.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Роль не найдена. ID: " + id)))
                 .collect(Collectors.toSet());
     }
 }
