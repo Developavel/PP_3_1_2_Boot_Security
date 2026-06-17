@@ -7,20 +7,24 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.RoleDao;
-import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
+import ru.kata.spring.boot_security.demo.repository.RoleRepository;
+import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.Set;
 
+/**
+ * Инициализатор данных.
+ * Создает роли и администратора при первом запуске.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class  DataInitializer implements CommandLineRunner {
+public class DataInitializer implements CommandLineRunner {
 
-    private final UserDao userDao;
-    private final RoleDao roleDao;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Value("${spring.jpa.hibernate.ddl-auto}")
@@ -44,6 +48,7 @@ public class  DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
+        log.info("Starting data initialization...");
 
         Role roleUser = findOrCreateRole("ROLE_USER");
         Role roleAdmin = findOrCreateRole("ROLE_ADMIN");
@@ -52,15 +57,18 @@ public class  DataInitializer implements CommandLineRunner {
             createAdmin(roleAdmin, roleUser);
         }
 
-        log.info("Инициализация завершена");
+        log.info("Data initialization completed.");
     }
 
     private boolean shouldCreateAdmin() {
-        return "create".equalsIgnoreCase(ddlAuto)
-                || "create-drop".equalsIgnoreCase(ddlAuto);
+        return "create".equalsIgnoreCase(ddlAuto) || "create-drop".equalsIgnoreCase(ddlAuto);
     }
 
     private void createAdmin(Role roleAdmin, Role roleUser) {
+        if (userRepository.existsByEmail(adminEmail)) {
+            log.info("Admin already exists: {}", adminEmail);
+            return;
+        }
 
         User admin = new User(
                 adminFirstName,
@@ -71,23 +79,16 @@ public class  DataInitializer implements CommandLineRunner {
                 Set.of(roleAdmin, roleUser)
         );
 
-        userDao.save(admin);
-
-        log.info(
-                "Создан администратор с email: {} (ddl-auto={})",
-                adminEmail,
-                ddlAuto
-        );
+        userRepository.save(admin);
+        log.info("Admin created: {} (ddl-auto={})", adminEmail, ddlAuto);
     }
 
     private Role findOrCreateRole(String roleName) {
-        return roleDao.findByName(roleName)
+        return roleRepository.findByName(roleName)
                 .orElseGet(() -> {
                     Role role = new Role(roleName);
-                    roleDao.save(role);
-
-                    log.info("Создана роль {}", roleName);
-
+                    roleRepository.save(role);
+                    log.info("Role created: {}", roleName);
                     return role;
                 });
     }

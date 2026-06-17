@@ -1,45 +1,39 @@
 package ru.kata.spring.boot_security.demo.services;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.model.Role;
+import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Сервис для управления ролями.
- * Содержит бизнес-логику: получение всех ролей, поиск по имени и идентификатору,
- * а также получение роли по умолчанию (ROLE_USER).
+ * Использует Spring Data JPA.
  */
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RoleServiceImpl implements RoleService {
 
-    private final RoleDao roleDao;
+    private final RoleRepository roleRepository;
 
     @Override
     public List<Role> getAllRoles() {
-        return roleDao.listRoles();
-    }
-
-    @Override
-    public Optional<Role> findByName(String name) {
-        return roleDao.findByName(name);
+        return roleRepository.findAll();
     }
 
     @Override
     public Optional<Role> findById(Long id) {
-        return roleDao.findById(id);
+        return roleRepository.findById(id);
     }
 
     @Override
+    @Transactional
     public Role getDefaultRole() {
-        return findByName("ROLE_USER")
+        return roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Default role ROLE_USER not found"));
     }
 }

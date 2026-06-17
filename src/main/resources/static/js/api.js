@@ -5,12 +5,12 @@
  */
 'use strict';
 
-var API = {
+const API = {
     baseUrl: '',
 
     _getCsrfToken: function() {
-        var tokenMeta = document.querySelector('meta[name="_csrf"]');
-        var headerMeta = document.querySelector('meta[name="_csrf_header"]');
+        const tokenMeta = document.querySelector('meta[name="_csrf"]');
+        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
         return {
             token: tokenMeta ? tokenMeta.content : null,
             header: headerMeta ? headerMeta.content : null
@@ -18,14 +18,13 @@ var API = {
     },
 
     _handleResponse: function(response) {
-        // ✅ Исправлено: сначала проверяем 204 No Content
         if (response.status === 204) {
             return null;
         }
 
         return response.json().then(function(data) {
             if (!response.ok) {
-                var errorMessage = data.message || data.error || 'HTTP error! status: ' + response.status;
+                const errorMessage = data.message || data.error || 'HTTP error! status: ' + response.status;
                 throw new Error(errorMessage);
             }
             return data;
@@ -39,14 +38,14 @@ var API = {
 
     _request: function(endpoint, options) {
         options = options || {};
-        var csrf = this._getCsrfToken();
+        const csrf = this._getCsrfToken();
 
-        var headers = {
+        const headers = {
             'Content-Type': 'application/json'
         };
 
         if (options.headers) {
-            for (var key in options.headers) {
+            for (const key in options.headers) {
                 if (options.headers.hasOwnProperty(key)) {
                     headers[key] = options.headers[key];
                 }
@@ -57,12 +56,12 @@ var API = {
             headers[csrf.header] = csrf.token;
         }
 
-        var config = {
+        const config = {
             headers: headers,
             credentials: 'same-origin'
         };
 
-        for (var prop in options) {
+        for (const prop in options) {
             if (options.hasOwnProperty(prop) && prop !== 'headers') {
                 config[prop] = options[prop];
             }
@@ -84,7 +83,7 @@ var API = {
         },
 
         create: function(userData) {
-            var payload = {
+            const payload = {
                 firstName: userData.firstName,
                 lastName: userData.lastName,
                 age: userData.age,
@@ -100,7 +99,7 @@ var API = {
         },
 
         update: function(id, userData) {
-            var payload = {
+            const payload = {
                 firstName: userData.firstName,
                 lastName: userData.lastName,
                 age: userData.age,

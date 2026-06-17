@@ -11,10 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-/**
- * Загружает и отображает информацию о текущем пользователе
- * @returns {Promise<void>}
- */
 function loadUserInfo() {
     return API.user.getCurrent()
         .then(function(user) {
@@ -26,19 +22,15 @@ function loadUserInfo() {
         });
 }
 
-/**
- * Рендерит информацию о пользователе в таблицу
- * @param {Object} user - Данные пользователя
- */
 function renderUserInfo(user) {
-    var tbody = document.getElementById('user-info-body');
+    const tbody = document.getElementById('user-info-body');
 
     if (!user) {
         tbody.innerHTML = '<tr><td colspan="6" class="text-center">Данные пользователя не найдены</td></tr>';
         return;
     }
 
-    var rolesString = getUserRolesString(user.roles);
+    const rolesString = getUserRolesString(user.roles);
 
     tbody.innerHTML =
         '<tr>' +

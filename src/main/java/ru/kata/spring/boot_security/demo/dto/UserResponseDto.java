@@ -5,9 +5,7 @@ import lombok.NoArgsConstructor;
 import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * DTO для ответа с данными пользователя.

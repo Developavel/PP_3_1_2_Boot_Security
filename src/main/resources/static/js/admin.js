@@ -1,8 +1,14 @@
 /**
  * admin.js - Управление админской панелью
- * Использует Fetch API для взаимодействия с REST бэкендом
+ * Fetch API для взаимодействия с REST бэкендом
  */
 'use strict';
+
+const COLUMN_COUNT = 8;
+
+const Bootstrap = window.bootstrap || {};
+const BootstrapTab = Bootstrap.Tab || null;
+const BootstrapModal = Bootstrap.Modal || null;
 
 document.addEventListener('DOMContentLoaded', function() {
     Promise.all([loadUsers(), loadRoles()])
@@ -19,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // ==================== ЗАГРУЗКА ДАННЫХ ====================
 
 function loadUsers() {
-    showTableLoading('users-table-body', 8);
+    showTableLoading('users-table-body', COLUMN_COUNT);
     return API.users.getAll()
         .then(function(users) {
             renderUsersTable(users);
@@ -44,23 +50,22 @@ function loadRoles() {
 // ==================== РЕНДЕРИНГ ====================
 
 function renderUsersTable(users) {
-    // ✅ Используем getElementById для единообразия
-    var tbody = document.getElementById('users-table-body');
+    const tbody = document.getElementById('users-table-body');
     if (!users || users.length === 0) {
-        showTableEmpty('users-table-body', 8);
+        showTableEmpty('users-table-body', COLUMN_COUNT);
         return;
     }
 
     tbody.innerHTML = '';
-    for (var i = 0; i < users.length; i++) {
-        var user = users[i];
-        var row = '<tr>' +
+    for (let i = 0; i < users.length; i++) {
+        const user = users[i];
+        const row = '<tr>' +
             '<td>' + user.id + '</td>' +
             '<td>' + escapeHtml(user.firstName) + '</td>' +
             '<td>' + escapeHtml(user.lastName) + '</td>' +
             '<td>' + user.age + '</td>' +
             '<td>' + escapeHtml(user.email) + '</td>' +
-            '<td>' + escapeHtml(getUserRolesString(user.roles)) + '</td>' +  // ✅ Добавлен escapeHtml для ролей
+            '<td>' + escapeHtml(getUserRolesString(user.roles)) + '</td>' +
             '<td><button type="button" class="btn btn-info text-white btn-sm edit-btn" ' +
             'data-bs-toggle="modal" data-bs-target="#editModal" ' +
             'data-user=\'' + escapeJson(JSON.stringify(user)) + '\'>Редактировать</button></td>' +
@@ -73,23 +78,23 @@ function renderUsersTable(users) {
 }
 
 function renderRoleSelects(roles) {
-    var selects = document.querySelectorAll('select[name="roleIds"]');
-    var options = '';
-    for (var i = 0; i < roles.length; i++) {
+    const selects = document.querySelectorAll('select[name="roleIds"]');
+    let options = '';
+    for (let i = 0; i < roles.length; i++) {
         options += '<option value="' + roles[i].id + '">' + roles[i].name.replace('ROLE_', '') + '</option>';
     }
 
-    for (var j = 0; j < selects.length; j++) {
-        var select = selects[j];
-        var currentValues = [];
-        var selectedOptions = select.selectedOptions;
-        for (var k = 0; k < selectedOptions.length; k++) {
+    for (let j = 0; j < selects.length; j++) {
+        const select = selects[j];
+        const currentValues = [];
+        const selectedOptions = select.selectedOptions;
+        for (let k = 0; k < selectedOptions.length; k++) {
             currentValues.push(selectedOptions[k].value);
         }
         select.innerHTML = options;
         if (currentValues.length > 0) {
-            var optionElements = select.options;
-            for (var l = 0; l < optionElements.length; l++) {
+            const optionElements = select.options;
+            for (let l = 0; l < optionElements.length; l++) {
                 if (currentValues.indexOf(optionElements[l].value) !== -1) {
                     optionElements[l].selected = true;
                 }
@@ -101,39 +106,39 @@ function renderRoleSelects(roles) {
 // ==================== МОДАЛЬНЫЕ ОКНА ====================
 
 function initModals() {
-    var editModal = document.getElementById('editModal');
+    const editModal = document.getElementById('editModal');
     if (editModal) {
         editModal.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
+            const button = event.relatedTarget;
             if (button && button.dataset.user) {
                 try {
-                    var user = JSON.parse(button.dataset.user);
+                    const user = JSON.parse(button.dataset.user);
                     fillEditModal(user);
                 } catch (error) {
                     console.error('Ошибка парсинга данных пользователя:', error);
                 }
             }
         });
-        var editForm = document.getElementById('editForm');
+        const editForm = document.getElementById('editForm');
         if (editForm) {
             editForm.addEventListener('submit', handleEditSubmit);
         }
     }
 
-    var deleteModal = document.getElementById('deleteModal');
+    const deleteModal = document.getElementById('deleteModal');
     if (deleteModal) {
         deleteModal.addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
+            const button = event.relatedTarget;
             if (button && button.dataset.user) {
                 try {
-                    var user = JSON.parse(button.dataset.user);
+                    const user = JSON.parse(button.dataset.user);
                     fillDeleteModal(user);
                 } catch (error) {
                     console.error('Ошибка парсинга данных пользователя:', error);
                 }
             }
         });
-        var deleteForm = document.getElementById('deleteForm');
+        const deleteForm = document.getElementById('deleteForm');
         if (deleteForm) {
             deleteForm.addEventListener('submit', handleDeleteSubmit);
         }
@@ -149,14 +154,14 @@ function fillEditModal(user) {
     document.getElementById('editEmail').value = user.email || '';
     document.getElementById('editPassword').value = '';
 
-    var roleSelect = document.getElementById('editRoleIds');
+    const roleSelect = document.getElementById('editRoleIds');
     if (roleSelect && user.roles) {
-        var userRoleIds = [];
-        for (var i = 0; i < user.roles.length; i++) {
+        const userRoleIds = [];
+        for (let i = 0; i < user.roles.length; i++) {
             userRoleIds.push(user.roles[i].id.toString());
         }
-        var options = roleSelect.options;
-        for (var j = 0; j < options.length; j++) {
+        const options = roleSelect.options;
+        for (let j = 0; j < options.length; j++) {
             options[j].selected = userRoleIds.indexOf(options[j].value) !== -1;
         }
     }
@@ -175,42 +180,73 @@ function fillDeleteModal(user) {
 // ==================== ОБРАБОТЧИКИ СОБЫТИЙ ====================
 
 function initEventHandlers() {
-    var createForm = document.getElementById('createUserForm');
+    const createForm = document.getElementById('createUserForm');
     if (createForm) {
         createForm.addEventListener('submit', handleCreateSubmit);
     }
 }
 
+function getStringValue(formData, key) {
+    const value = formData.get(key);
+    if (value === null || value === undefined) {
+        return '';
+    }
+    if (typeof value === 'string') {
+        return value;
+    }
+    if (value instanceof File) {
+        return value.name || '';
+    }
+    return String(value);
+}
+
+function showBootstrapTab(tabId) {
+    const tabElement = document.getElementById(tabId);
+    if (tabElement && BootstrapTab) {
+        const tab = new BootstrapTab(tabElement);
+        tab.show();
+    }
+}
+
+function hideBootstrapModal(modalId) {
+    const modalElement = document.getElementById(modalId);
+    if (modalElement && BootstrapModal) {
+        const modal = BootstrapModal.getInstance(modalElement);
+        if (modal) {
+            modal.hide();
+        }
+    }
+}
+
 function handleCreateSubmit(event) {
     event.preventDefault();
-    var form = event.target;
-    var formData = new FormData(form);
+    const form = event.target;
+    const formData = new FormData(form);
 
-    var firstName = formData.get('firstName');
-    var lastName = formData.get('lastName');
-    var ageValue = formData.get('age');
-    var email = formData.get('email');
-    var password = formData.get('password');
-    var roleIdsRaw = formData.getAll('roleIds');
+    const firstName = getStringValue(formData, 'firstName');
+    const lastName = getStringValue(formData, 'lastName');
+    const ageValue = getStringValue(formData, 'age');
+    const email = getStringValue(formData, 'email');
+    const password = getStringValue(formData, 'password');
+    const roleIdsRaw = formData.getAll('roleIds');
 
-    // ✅ Проверка возраста
-    var age = typeof ageValue === 'string' ? parseInt(ageValue) : 0;
+    const age = parseInt(ageValue, 10);
     if (isNaN(age) || age < 1 || age > 150) {
         showError('Введите корректный возраст (от 1 до 150)');
         return;
     }
 
-    var userData = {
-        firstName: typeof firstName === 'string' ? firstName : '',
-        lastName: typeof lastName === 'string' ? lastName : '',
+    const userData = {
+        firstName: firstName,
+        lastName: lastName,
         age: age,
-        email: typeof email === 'string' ? email : '',
-        password: typeof password === 'string' ? password : '',
+        email: email,
+        password: password,
         roleIds: []
     };
 
-    for (var i = 0; i < roleIdsRaw.length; i++) {
-        var id = parseInt(roleIdsRaw[i]);
+    for (let i = 0; i < roleIdsRaw.length; i++) {
+        const id = parseInt(roleIdsRaw[i], 10);
         if (!isNaN(id)) {
             userData.roleIds.push(id);
         }
@@ -221,13 +257,12 @@ function handleCreateSubmit(event) {
         return;
     }
 
-    // ✅ Добавлена проверка ролей при создании
     if (userData.roleIds.length === 0) {
         showError('Выберите хотя бы одну роль');
         return;
     }
 
-    var submitBtn = form.querySelector('button[type="submit"]');
+    const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Создание...';
@@ -239,13 +274,15 @@ function handleCreateSubmit(event) {
         })
         .then(function() {
             form.reset();
-            showSuccess('Пользователь успешно создан!');
-
-            var usersTab = document.getElementById('users-table-tab');
-            if (usersTab && typeof bootstrap !== 'undefined') {
-                var tab = new bootstrap.Tab(usersTab);
-                tab.show();
+            const roleSelect = document.getElementById('createRoleIds');
+            if (roleSelect) {
+                const options = roleSelect.options;
+                for (let i = 0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
             }
+            showSuccess('Пользователь успешно создан!');
+            showBootstrapTab('users-table-tab');
         })
         .catch(function(error) {
             console.error('Ошибка создания пользователя:', error);
@@ -262,43 +299,42 @@ function handleCreateSubmit(event) {
 function handleEditSubmit(event) {
     event.preventDefault();
 
-    var form = event.target;
-    var formData = new FormData(form);
+    const form = event.target;
+    const formData = new FormData(form);
 
-    var idValue = formData.get('id');
-    var id = typeof idValue === 'string' ? parseInt(idValue) : 0;
+    const idValue = getStringValue(formData, 'id');
+    const id = parseInt(idValue, 10);
 
-    var roleSelect = document.getElementById('editRoleIds');
-    var selectedRoles = [];
+    const roleSelect = document.getElementById('editRoleIds');
+    const selectedRoles = [];
     if (roleSelect) {
-        var selectedOptions = roleSelect.selectedOptions;
-        for (var i = 0; i < selectedOptions.length; i++) {
-            var val = parseInt(selectedOptions[i].value);
+        const selectedOptions = roleSelect.selectedOptions;
+        for (let i = 0; i < selectedOptions.length; i++) {
+            const val = parseInt(selectedOptions[i].value, 10);
             if (!isNaN(val)) {
                 selectedRoles.push(val);
             }
         }
     }
 
-    var firstName = formData.get('firstName');
-    var lastName = formData.get('lastName');
-    var ageValue = formData.get('age');
-    var email = formData.get('email');
-    var newPassword = formData.get('newPassword');
+    const firstName = getStringValue(formData, 'firstName');
+    const lastName = getStringValue(formData, 'lastName');
+    const ageValue = getStringValue(formData, 'age');
+    const email = getStringValue(formData, 'email');
+    const newPassword = getStringValue(formData, 'newPassword');
 
-    // ✅ Проверка возраста
-    var age = typeof ageValue === 'string' ? parseInt(ageValue) : 0;
+    const age = parseInt(ageValue, 10);
     if (isNaN(age) || age < 1 || age > 150) {
         showError('Введите корректный возраст (от 1 до 150)');
         return;
     }
 
-    var userData = {
-        firstName: typeof firstName === 'string' ? firstName : '',
-        lastName: typeof lastName === 'string' ? lastName : '',
+    const userData = {
+        firstName: firstName,
+        lastName: lastName,
         age: age,
-        email: typeof email === 'string' ? email : '',
-        newPassword: typeof newPassword === 'string' && newPassword ? newPassword : undefined,
+        email: email,
+        newPassword: newPassword || undefined,
         roleIds: selectedRoles
     };
 
@@ -312,7 +348,7 @@ function handleEditSubmit(event) {
         return;
     }
 
-    var submitBtn = form.querySelector('button[type="submit"]');
+    const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Сохранение...';
@@ -323,13 +359,7 @@ function handleEditSubmit(event) {
             return loadUsers();
         })
         .then(function() {
-            var modalElement = document.getElementById('editModal');
-            if (modalElement && typeof bootstrap !== 'undefined') {
-                var modal = bootstrap.Modal.getInstance(modalElement);
-                if (modal) {
-                    modal.hide();
-                }
-            }
+            hideBootstrapModal('editModal');
             showSuccess('Пользователь успешно обновлен!');
         })
         .catch(function(error) {
@@ -347,13 +377,13 @@ function handleEditSubmit(event) {
 function handleDeleteSubmit(event) {
     event.preventDefault();
 
-    var form = event.target;
-    var formData = new FormData(form);
+    const form = event.target;
+    const formData = new FormData(form);
 
-    var idValue = formData.get('id');
-    var id = typeof idValue === 'string' ? parseInt(idValue) : 0;
+    const idValue = getStringValue(formData, 'id');
+    const id = parseInt(idValue, 10);
 
-    var submitBtn = form.querySelector('button[type="submit"]');
+    const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) {
         submitBtn.disabled = true;
         submitBtn.textContent = 'Удаление...';
@@ -364,13 +394,7 @@ function handleDeleteSubmit(event) {
             return loadUsers();
         })
         .then(function() {
-            var modalElement = document.getElementById('deleteModal');
-            if (modalElement && typeof bootstrap !== 'undefined') {
-                var modal = bootstrap.Modal.getInstance(modalElement);
-                if (modal) {
-                    modal.hide();
-                }
-            }
+            hideBootstrapModal('deleteModal');
             showSuccess('Пользователь успешно удален!');
         })
         .catch(function(error) {
