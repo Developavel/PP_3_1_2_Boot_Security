@@ -11,10 +11,8 @@ import java.io.IOException;
 import java.util.Set;
 
 /**
- * Обработчик успешной аутентификации, реализует интерфейс {@link AuthenticationSuccessHandler}.
- * Администратор направляется в панель управления (/admin)
- * Обычный пользователь — на свою страницу профиля (/user)
- * Если роли не определены (не должно происходить) — на главную (/)
+ * Перенаправляет пользователя после успешного входа.
+ * Администратор направляется на /admin, обычный пользователь на /user.
  */
 @Component
 public class SuccessUserHandler implements AuthenticationSuccessHandler {

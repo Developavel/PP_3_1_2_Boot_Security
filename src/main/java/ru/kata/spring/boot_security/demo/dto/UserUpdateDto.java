@@ -9,9 +9,9 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
+
 /**
  * DTO для обновления пользователя.
- * Используется в AdminRestController для обновления пользователей.
  */
 @Data
 @NoArgsConstructor
@@ -36,7 +36,7 @@ public class UserUpdateDto {
     private String email;
 
     @Size(min = 4, message = "Password must be at least 4 characters")
-    private String newPassword;  // Опционально, только если нужно сменить пароль
+    private String newPassword;
 
     private Set<Long> roleIds;
 }

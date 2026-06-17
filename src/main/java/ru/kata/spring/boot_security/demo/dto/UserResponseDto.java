@@ -8,8 +8,7 @@ import ru.kata.spring.boot_security.demo.model.User;
 import java.util.Set;
 
 /**
- * DTO для ответа с данными пользователя.
- * Исключает чувствительные поля (например, пароль).
+ * DTO для ответа с данными пользователя (без пароля).
  */
 @Data
 @NoArgsConstructor
@@ -24,7 +23,10 @@ public class UserResponseDto {
     private String rolesAsString;
 
     /**
-     * Конвертирует User в UserResponseDto
+     * Конвертирует сущность User в DTO.
+     *
+     * @param user сущность пользователя
+     * @return DTO пользователя или null, если user == null
      */
     public static UserResponseDto fromUser(User user) {
         if (user == null) {

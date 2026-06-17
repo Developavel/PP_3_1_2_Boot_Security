@@ -9,8 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 /**
- * Сервис для загрузки данных пользователя по email.
- * Использует Spring Data JPA.
+ * Загружает данные пользователя по email для Spring Security.
  */
 @Service
 @RequiredArgsConstructor

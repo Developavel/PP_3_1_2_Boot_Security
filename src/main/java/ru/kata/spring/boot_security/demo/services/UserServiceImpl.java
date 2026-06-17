@@ -16,8 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Сервис для управления пользователями.
- * Использует Spring Data JPA.
+ * Реализация сервиса для управления пользователями.
  */
 @Slf4j
 @Service
@@ -44,21 +43,17 @@ public class UserServiceImpl implements UserService {
     public void create(User user, Set<Long> roleIds) {
         log.info("Creating user: {}", user.getEmail());
 
-        // Проверка на дубликат email
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Пользователь с email '" + user.getEmail() + "' уже существует!");
         }
 
-        // Назначение ролей
         if (roleIds == null || roleIds.isEmpty()) {
             user.setRoles(Set.of(roleService.getDefaultRole()));
         } else {
             user.setRoles(convertIdsToRoles(roleIds));
         }
 
-        // Кодирование пароля
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         userRepository.save(user);
         log.info("User created successfully: {}", user.getEmail());
     }
@@ -75,26 +70,21 @@ public class UserServiceImpl implements UserService {
         User existing = userRepository.findByIdWithRoles(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден! ID: " + user.getId()));
 
-        // Проверка на дубликат email (если email изменен)
         if (!existing.getEmail().equals(user.getEmail()) &&
                 userRepository.existsByEmail(user.getEmail())) {
             throw new IllegalArgumentException("Пользователь с email '" + user.getEmail() + "' уже существует!");
         }
 
-        // Обновление полей
         existing.setFirstName(user.getFirstName());
         existing.setLastName(user.getLastName());
         existing.setAge(user.getAge());
         existing.setEmail(user.getEmail());
 
-        // Обновление пароля (если указан)
         if (newPassword != null && !newPassword.isEmpty()) {
             existing.setPassword(passwordEncoder.encode(newPassword));
         }
 
-        // Обновление ролей
         existing.setRoles(convertIdsToRoles(roleIds));
-
         userRepository.save(existing);
         log.info("User updated successfully: {}", existing.getEmail());
     }

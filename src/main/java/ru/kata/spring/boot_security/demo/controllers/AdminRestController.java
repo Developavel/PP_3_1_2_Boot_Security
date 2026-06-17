@@ -1,11 +1,9 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import ru.kata.spring.boot_security.demo.dto.UserCreateDto;
 import ru.kata.spring.boot_security.demo.dto.UserResponseDto;
 import ru.kata.spring.boot_security.demo.dto.UserUpdateDto;
@@ -16,6 +14,9 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * REST-контроллер для управления пользователями (только для администратора).
+ */
 @RestController
 @RequestMapping("/api/admin")
 @RequiredArgsConstructor
@@ -23,6 +24,11 @@ public class AdminRestController {
 
     private final UserService userService;
 
+    /**
+     * Возвращает список всех пользователей.
+     *
+     * @return список пользователей в формате UserResponseDto
+     */
     @GetMapping("/users")
     public List<UserResponseDto> getAllUsers() {
         return userService.listUsers().stream()
@@ -30,6 +36,12 @@ public class AdminRestController {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Возвращает пользователя по ID.
+     *
+     * @param id идентификатор пользователя
+     * @return пользователь в формате UserResponseDto или 404 Not Found
+     */
     @GetMapping("/users/{id}")
     public ResponseEntity<UserResponseDto> getUser(@PathVariable Long id) {
         return userService.findById(id)
@@ -38,6 +50,12 @@ public class AdminRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Создает нового пользователя.
+     *
+     * @param createDto данные для создания пользователя
+     * @return созданный пользователь в формате UserResponseDto
+     */
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto createUser(@Valid @RequestBody UserCreateDto createDto) {
@@ -53,6 +71,13 @@ public class AdminRestController {
         return UserResponseDto.fromUser(user);
     }
 
+    /**
+     * Обновляет существующего пользователя.
+     *
+     * @param id        идентификатор пользователя
+     * @param updateDto данные для обновления
+     * @return обновленный пользователь или 404 Not Found
+     */
     @PutMapping("/users/{id}")
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable Long id,
@@ -73,6 +98,12 @@ public class AdminRestController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Удаляет пользователя по ID.
+     *
+     * @param id идентификатор пользователя
+     * @return 204 No Content
+     */
     @DeleteMapping("/users/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.delete(id);

@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Column;
@@ -16,10 +15,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 /**
- * Сущность роли, реализующая {@link GrantedAuthority} для использования в Spring Security.
- * Содержит идентификатор и название роли (например, "ROLE_USER", "ROLE_ADMIN").
- * Название роли должно быть уникальным и не может быть пустым.
- * Используется в связях ManyToMany с пользователями.
+ * Сущность роли для Spring Security.
+ * Название роли должно быть уникальным (например, ROLE_USER, ROLE_ADMIN).
  */
 @Getter
 @Setter

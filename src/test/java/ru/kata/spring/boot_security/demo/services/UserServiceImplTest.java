@@ -19,6 +19,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.mockito.Mockito.*;
 
+/**
+ * Unit-тесты для UserServiceImpl.
+ */
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
@@ -34,6 +37,9 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
+    /**
+     * Проверяет, что при создании пользователя без ролей назначается роль по умолчанию.
+     */
     @Test
     void create_ShouldSetDefaultRole_WhenRoleIdsIsEmpty() {
         User user = new User();
@@ -51,6 +57,9 @@ class UserServiceImplTest {
         assertThat(user.getPassword()).isEqualTo("encodedPass");
     }
 
+    /**
+     * Проверяет, что при создании пользователя с существующим email выбрасывается исключение.
+     */
     @Test
     void create_ShouldThrowException_WhenEmailExists() {
         User user = new User();
@@ -64,6 +73,9 @@ class UserServiceImplTest {
                 .hasMessageContaining("уже существует");
     }
 
+    /**
+     * Проверяет, что при обновлении без ролей выбрасывается исключение.
+     */
     @Test
     void update_ShouldThrowException_WhenRoleIdsIsEmpty() {
         User user = new User();
@@ -74,6 +86,9 @@ class UserServiceImplTest {
                 .hasMessageContaining("одну роль");
     }
 
+    /**
+     * Проверяет, что при обновлении несуществующего пользователя выбрасывается исключение.
+     */
     @Test
     void update_ShouldThrowException_WhenUserNotFound() {
         User user = new User();
@@ -87,6 +102,9 @@ class UserServiceImplTest {
                 .hasMessageContaining("не найден");
     }
 
+    /**
+     * Проверяет, что при удалении несуществующего пользователя выбрасывается исключение.
+     */
     @Test
     void delete_ShouldThrowException_WhenUserNotFound() {
         when(userRepository.existsById(999L)).thenReturn(false);

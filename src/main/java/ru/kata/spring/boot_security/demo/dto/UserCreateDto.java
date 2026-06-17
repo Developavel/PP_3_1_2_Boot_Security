@@ -12,7 +12,6 @@ import java.util.Set;
 
 /**
  * DTO для создания нового пользователя.
- * Используется в AdminRestController для создания пользователей.
  */
 @Data
 @NoArgsConstructor

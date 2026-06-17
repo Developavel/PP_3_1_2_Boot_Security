@@ -8,14 +8,15 @@ import java.util.Optional;
 
 /**
  * Репозиторий для работы с ролями.
- * Использует Spring Data JPA.
  */
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Long> {
 
     /**
-     * Находит роль по имени
+     * Находит роль по имени.
+     *
+     * @param name имя роли (например, ROLE_ADMIN)
+     * @return Optional с найденной ролью
      */
     Optional<Role> findByName(String name);
-
 }

@@ -16,15 +16,14 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Глобальный обработчик исключений для REST контроллеров.
- * Перехватывает исключения и возвращает понятные HTTP-ответы.
+ * Глобальный обработчик исключений для REST-контроллеров.
  */
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
     /**
-     * Обработка IllegalArgumentException (неверные аргументы)
+     * Обработка IllegalArgumentException.
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgument(
@@ -44,7 +43,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обработка EntityNotFoundException (сущность не найдена)
+     * Обработка EntityNotFoundException.
      */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handleEntityNotFound(
@@ -64,7 +63,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обработка ошибок валидации DTO
+     * Обработка ошибок валидации DTO.
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidationExceptions(
@@ -95,7 +94,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Обработка всех остальных исключений (запасной вариант)
+     * Обработка всех остальных исключений.
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGlobalException(
@@ -110,9 +109,6 @@ public class GlobalExceptionHandler {
         body.put("error", "Internal Server Error");
         body.put("message", "An unexpected error occurred");
         body.put("path", request.getDescription(false).replace("uri=", ""));
-
-        // В режиме разработки можно добавить стектрейс
-        // body.put("trace", ex.getStackTrace());
 
         return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }

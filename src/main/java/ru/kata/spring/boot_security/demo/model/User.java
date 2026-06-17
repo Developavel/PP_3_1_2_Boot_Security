@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -26,10 +25,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Сущность пользователя, реализующая {@link UserDetails} для интеграции со Spring Security.
- * Содержит учётные данные (email, password), персональную информацию (firstName, lastName, age),
- * список ролей и флаги состояния учётной записи (всегда активна).
- * Связь с ролями (многие ко многим), с каскадированием PERSIST и MERGE.
+ * Сущность пользователя для Spring Security.
+ * Содержит учетные данные, персональную информацию и роли.
  */
 @Getter
 @Setter
@@ -80,7 +77,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;   // email используется как логин
+        return email;
     }
 
     @Override

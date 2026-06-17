@@ -1,7 +1,6 @@
 package ru.kata.spring.boot_security.demo.configs;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,7 +14,7 @@ import ru.kata.spring.boot_security.demo.services.UserDetailsServiceImpl;
 
 /**
  * Конфигурация Spring Security.
- * Настраивает правила доступа к URL, форму логина, обработчик успешной аутентификации и выход.
+ * Настраивает правила доступа, форму логина, обработчик успешной аутентификации и выход.
  */
 @Configuration
 @EnableWebSecurity
@@ -28,7 +27,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                //.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/", "/error").permitAll()
                 .antMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")

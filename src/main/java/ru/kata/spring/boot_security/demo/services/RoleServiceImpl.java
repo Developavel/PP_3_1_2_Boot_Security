@@ -10,8 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Сервис для управления ролями.
- * Использует Spring Data JPA.
+ * Реализация сервиса для управления ролями.
  */
 @Service
 @Transactional(readOnly = true)
