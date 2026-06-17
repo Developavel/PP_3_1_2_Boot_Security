@@ -2,7 +2,7 @@
 <div th:fragment="sidebar(activePage)"
      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
-  <nav class="nav flex-column pt-3">
+  <nav class="sidebar nav flex-column pt-3">
 
     <!-- Ссылка на админ-панель (видна только администраторам) -->
     <a sec:authorize="hasRole('ADMIN')"

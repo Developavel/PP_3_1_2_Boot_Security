@@ -2,134 +2,138 @@
  * admin.js - Управление админской панелью
  * Использует Fetch API для взаимодействия с REST бэкендом
  */
+'use strict';
 
-let allUsers = [];
-let allRoles = [];
-
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        await Promise.all([loadUsers(), loadRoles()]);
-        initEventHandlers();
-        initModals();
-    } catch (error) {
-        console.error('Ошибка при инициализации страницы:', error);
-        showError('Не удалось загрузить данные. Пожалуйста, обновите страницу.');
-    }
+document.addEventListener('DOMContentLoaded', function() {
+    Promise.all([loadUsers(), loadRoles()])
+        .then(function() {
+            initEventHandlers();
+            initModals();
+        })
+        .catch(function(error) {
+            console.error('Ошибка при инициализации страницы:', error);
+            showError('Не удалось загрузить данные. Пожалуйста, обновите страницу.');
+        });
 });
 
 // ==================== ЗАГРУЗКА ДАННЫХ ====================
 
-async function loadUsers() {
-    try {
-        allUsers = await API.users.getAll();
-        renderUsersTable(allUsers);
-    } catch (error) {
-        console.error('Ошибка загрузки пользователей:', error);
-        showError('Не удалось загрузить список пользователей');
-    }
+function loadUsers() {
+    showTableLoading('users-table-body', 8);
+    return API.users.getAll()
+        .then(function(users) {
+            renderUsersTable(users);
+        })
+        .catch(function(error) {
+            console.error('Ошибка загрузки пользователей:', error);
+            showError('Не удалось загрузить список пользователей');
+        });
 }
 
-async function loadRoles() {
-    try {
-        allRoles = await API.roles.getAll();
-        renderRoleSelects(allRoles);
-    } catch (error) {
-        console.error('Ошибка загрузки ролей:', error);
-        showError('Не удалось загрузить список ролей');
-    }
+function loadRoles() {
+    return API.roles.getAll()
+        .then(function(roles) {
+            renderRoleSelects(roles);
+        })
+        .catch(function(error) {
+            console.error('Ошибка загрузки ролей:', error);
+            showError('Не удалось загрузить список ролей');
+        });
 }
 
 // ==================== РЕНДЕРИНГ ====================
 
 function renderUsersTable(users) {
-    const tbody = document.querySelector('#users-table tbody');
+    // ✅ Используем getElementById для единообразия
+    var tbody = document.getElementById('users-table-body');
     if (!users || users.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center">Пользователи не найдены</td></tr>`;
+        showTableEmpty('users-table-body', 8);
         return;
     }
-    tbody.innerHTML = users.map(user => `
-        <tr>
-            <td>${user.id}</td>
-            <td>${escapeHtml(user.firstName)}</td>
-            <td>${escapeHtml(user.lastName)}</td>
-            <td>${user.age}</td>
-            <td>${escapeHtml(user.email)}</td>
-            <td>${getUserRolesString(user.roles)}</td>
-            <td>
-                <button type="button" class="btn btn-info text-white btn-sm edit-btn"
-                        data-bs-toggle="modal" data-bs-target="#editModal"
-                        data-user='${escapeJson(JSON.stringify(user))}'>
-                    Edit
-                </button>
-            </td>
-            <td>
-                <button type="button" class="btn btn-danger btn-sm delete-btn"
-                        data-bs-toggle="modal" data-bs-target="#deleteModal"
-                        data-user='${escapeJson(JSON.stringify(user))}'>
-                    Delete
-                </button>
-            </td>
-        </tr>
-    `).join('');
+
+    tbody.innerHTML = '';
+    for (var i = 0; i < users.length; i++) {
+        var user = users[i];
+        var row = '<tr>' +
+            '<td>' + user.id + '</td>' +
+            '<td>' + escapeHtml(user.firstName) + '</td>' +
+            '<td>' + escapeHtml(user.lastName) + '</td>' +
+            '<td>' + user.age + '</td>' +
+            '<td>' + escapeHtml(user.email) + '</td>' +
+            '<td>' + escapeHtml(getUserRolesString(user.roles)) + '</td>' +  // ✅ Добавлен escapeHtml для ролей
+            '<td><button type="button" class="btn btn-info text-white btn-sm edit-btn" ' +
+            'data-bs-toggle="modal" data-bs-target="#editModal" ' +
+            'data-user=\'' + escapeJson(JSON.stringify(user)) + '\'>Редактировать</button></td>' +
+            '<td><button type="button" class="btn btn-danger btn-sm delete-btn" ' +
+            'data-bs-toggle="modal" data-bs-target="#deleteModal" ' +
+            'data-user=\'' + escapeJson(JSON.stringify(user)) + '\'>Удалить</button></td>' +
+            '</tr>';
+        tbody.insertAdjacentHTML('beforeend', row);
+    }
 }
 
 function renderRoleSelects(roles) {
-    const selects = document.querySelectorAll('select[name="roleIds"]');
-    const options = roles.map(role => `
-        <option value="${role.id}">${role.name.replace('ROLE_', '')}</option>
-    `).join('');
-    selects.forEach(select => {
-        const currentValues = Array.from(select.selectedOptions).map(opt => opt.value);
+    var selects = document.querySelectorAll('select[name="roleIds"]');
+    var options = '';
+    for (var i = 0; i < roles.length; i++) {
+        options += '<option value="' + roles[i].id + '">' + roles[i].name.replace('ROLE_', '') + '</option>';
+    }
+
+    for (var j = 0; j < selects.length; j++) {
+        var select = selects[j];
+        var currentValues = [];
+        var selectedOptions = select.selectedOptions;
+        for (var k = 0; k < selectedOptions.length; k++) {
+            currentValues.push(selectedOptions[k].value);
+        }
         select.innerHTML = options;
         if (currentValues.length > 0) {
-            Array.from(select.options).forEach(opt => {
-                if (currentValues.includes(opt.value)) opt.selected = true;
-            });
+            var optionElements = select.options;
+            for (var l = 0; l < optionElements.length; l++) {
+                if (currentValues.indexOf(optionElements[l].value) !== -1) {
+                    optionElements[l].selected = true;
+                }
+            }
         }
-    });
-}
-
-function getUserRolesString(roles) {
-    if (!roles || roles.length === 0) return '';
-    return roles.map(role => role.name.replace('ROLE_', '')).join(', ');
+    }
 }
 
 // ==================== МОДАЛЬНЫЕ ОКНА ====================
 
 function initModals() {
-    const editModal = document.getElementById('editModal');
+    var editModal = document.getElementById('editModal');
     if (editModal) {
         editModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
+            var button = event.relatedTarget;
             if (button && button.dataset.user) {
                 try {
-                    const user = JSON.parse(button.dataset.user);
+                    var user = JSON.parse(button.dataset.user);
                     fillEditModal(user);
                 } catch (error) {
                     console.error('Ошибка парсинга данных пользователя:', error);
                 }
             }
         });
-        const editForm = document.getElementById('editForm');
+        var editForm = document.getElementById('editForm');
         if (editForm) {
             editForm.addEventListener('submit', handleEditSubmit);
         }
     }
 
-    const deleteModal = document.getElementById('deleteModal');
+    var deleteModal = document.getElementById('deleteModal');
     if (deleteModal) {
         deleteModal.addEventListener('show.bs.modal', function(event) {
-            const button = event.relatedTarget;
+            var button = event.relatedTarget;
             if (button && button.dataset.user) {
                 try {
-                    const user = JSON.parse(button.dataset.user);
+                    var user = JSON.parse(button.dataset.user);
                     fillDeleteModal(user);
                 } catch (error) {
                     console.error('Ошибка парсинга данных пользователя:', error);
                 }
             }
         });
-        const deleteForm = document.getElementById('deleteForm');
+        var deleteForm = document.getElementById('deleteForm');
         if (deleteForm) {
             deleteForm.addEventListener('submit', handleDeleteSubmit);
         }
@@ -145,14 +149,16 @@ function fillEditModal(user) {
     document.getElementById('editEmail').value = user.email || '';
     document.getElementById('editPassword').value = '';
 
-    const roleSelect = document.getElementById('editRoleIds');
+    var roleSelect = document.getElementById('editRoleIds');
     if (roleSelect && user.roles) {
-        const userRoleIds = user.roles.map(function(role) {
-            return role.id.toString();
-        });
-        Array.from(roleSelect.options).forEach(function(option) {
-            option.selected = userRoleIds.includes(option.value);
-        });
+        var userRoleIds = [];
+        for (var i = 0; i < user.roles.length; i++) {
+            userRoleIds.push(user.roles[i].id.toString());
+        }
+        var options = roleSelect.options;
+        for (var j = 0; j < options.length; j++) {
+            options[j].selected = userRoleIds.indexOf(options[j].value) !== -1;
+        }
     }
 }
 
@@ -169,101 +175,128 @@ function fillDeleteModal(user) {
 // ==================== ОБРАБОТЧИКИ СОБЫТИЙ ====================
 
 function initEventHandlers() {
-    const createForm = document.getElementById('createUserForm');
+    var createForm = document.getElementById('createUserForm');
     if (createForm) {
         createForm.addEventListener('submit', handleCreateSubmit);
     }
 }
 
-async function handleCreateSubmit(event) {
+function handleCreateSubmit(event) {
     event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
+    var form = event.target;
+    var formData = new FormData(form);
 
-    // Получаем значения с проверкой на null
-    const firstName = formData.get('firstName');
-    const lastName = formData.get('lastName');
-    const ageValue = formData.get('age');
-    const email = formData.get('email');
-    const password = formData.get('password');
-    const roleIdsRaw = formData.getAll('roleIds');
+    var firstName = formData.get('firstName');
+    var lastName = formData.get('lastName');
+    var ageValue = formData.get('age');
+    var email = formData.get('email');
+    var password = formData.get('password');
+    var roleIdsRaw = formData.getAll('roleIds');
 
-    const userData = {
+    // ✅ Проверка возраста
+    var age = typeof ageValue === 'string' ? parseInt(ageValue) : 0;
+    if (isNaN(age) || age < 1 || age > 150) {
+        showError('Введите корректный возраст (от 1 до 150)');
+        return;
+    }
+
+    var userData = {
         firstName: typeof firstName === 'string' ? firstName : '',
         lastName: typeof lastName === 'string' ? lastName : '',
-        age: typeof ageValue === 'string' ? parseInt(ageValue) : 0,
+        age: age,
         email: typeof email === 'string' ? email : '',
         password: typeof password === 'string' ? password : '',
-        roleIds: roleIdsRaw.map(function(id) {
-            return typeof id === 'string' ? parseInt(id) : 0;
-        }).filter(function(id) {
-            return !isNaN(id);
-        })
+        roleIds: []
     };
+
+    for (var i = 0; i < roleIdsRaw.length; i++) {
+        var id = parseInt(roleIdsRaw[i]);
+        if (!isNaN(id)) {
+            userData.roleIds.push(id);
+        }
+    }
 
     if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
         showError('Пожалуйста, заполните все обязательные поля');
         return;
     }
 
-    try {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Создание...';
-        }
-
-        await API.users.create(userData);
-        await loadUsers();
-        form.reset();
-        showSuccess('Пользователь успешно создан!');
-
-        const usersTab = document.getElementById('users-table-tab');
-        if (usersTab && typeof bootstrap !== 'undefined') {
-            const tab = new bootstrap.Tab(usersTab);
-            tab.show();
-        }
-    } catch (error) {
-        console.error('Ошибка создания пользователя:', error);
-        showError('Ошибка создания пользователя: ' + (error.message || 'Неизвестная ошибка'));
-    } finally {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Add new user';
-        }
+    // ✅ Добавлена проверка ролей при создании
+    if (userData.roleIds.length === 0) {
+        showError('Выберите хотя бы одну роль');
+        return;
     }
+
+    var submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Создание...';
+    }
+
+    API.users.create(userData)
+        .then(function() {
+            return loadUsers();
+        })
+        .then(function() {
+            form.reset();
+            showSuccess('Пользователь успешно создан!');
+
+            var usersTab = document.getElementById('users-table-tab');
+            if (usersTab && typeof bootstrap !== 'undefined') {
+                var tab = new bootstrap.Tab(usersTab);
+                tab.show();
+            }
+        })
+        .catch(function(error) {
+            console.error('Ошибка создания пользователя:', error);
+            showError('Ошибка создания пользователя: ' + (error.message || 'Неизвестная ошибка'));
+        })
+        .finally(function() {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Добавить пользователя';
+            }
+        });
 }
 
-async function handleEditSubmit(event) {
+function handleEditSubmit(event) {
     event.preventDefault();
 
-    const form = event.target;
-    const formData = new FormData(form);
+    var form = event.target;
+    var formData = new FormData(form);
 
-    const idValue = formData.get('id');
-    const id = typeof idValue === 'string' ? parseInt(idValue) : 0;
+    var idValue = formData.get('id');
+    var id = typeof idValue === 'string' ? parseInt(idValue) : 0;
 
-    const roleSelect = document.getElementById('editRoleIds');
-    let selectedRoles = [];
+    var roleSelect = document.getElementById('editRoleIds');
+    var selectedRoles = [];
     if (roleSelect) {
-        selectedRoles = Array.from(roleSelect.selectedOptions).map(function(opt) {
-            return parseInt(opt.value);
-        }).filter(function(id) {
-            return !isNaN(id);
-        });
+        var selectedOptions = roleSelect.selectedOptions;
+        for (var i = 0; i < selectedOptions.length; i++) {
+            var val = parseInt(selectedOptions[i].value);
+            if (!isNaN(val)) {
+                selectedRoles.push(val);
+            }
+        }
     }
 
-    const firstName = formData.get('firstName');
-    const lastName = formData.get('lastName');
-    const ageValue = formData.get('age');
-    const email = formData.get('email');
-    const newPassword = formData.get('newPassword');
+    var firstName = formData.get('firstName');
+    var lastName = formData.get('lastName');
+    var ageValue = formData.get('age');
+    var email = formData.get('email');
+    var newPassword = formData.get('newPassword');
 
-    const userData = {
+    // ✅ Проверка возраста
+    var age = typeof ageValue === 'string' ? parseInt(ageValue) : 0;
+    if (isNaN(age) || age < 1 || age > 150) {
+        showError('Введите корректный возраст (от 1 до 150)');
+        return;
+    }
+
+    var userData = {
         firstName: typeof firstName === 'string' ? firstName : '',
         lastName: typeof lastName === 'string' ? lastName : '',
-        age: typeof ageValue === 'string' ? parseInt(ageValue) : 0,
+        age: age,
         email: typeof email === 'string' ? email : '',
         newPassword: typeof newPassword === 'string' && newPassword ? newPassword : undefined,
         roleIds: selectedRoles
@@ -279,133 +312,75 @@ async function handleEditSubmit(event) {
         return;
     }
 
-    try {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Сохранение...';
-        }
-
-        await API.users.update(id, userData);
-        await loadUsers();
-
-        const modalElement = document.getElementById('editModal');
-        if (modalElement && typeof bootstrap !== 'undefined') {
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
-            }
-        }
-
-        showSuccess('Пользователь успешно обновлен!');
-    } catch (error) {
-        console.error('Ошибка обновления пользователя:', error);
-        showError('Ошибка обновления пользователя: ' + (error.message || 'Неизвестная ошибка'));
-    } finally {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Edit';
-        }
+    var submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Сохранение...';
     }
+
+    API.users.update(id, userData)
+        .then(function() {
+            return loadUsers();
+        })
+        .then(function() {
+            var modalElement = document.getElementById('editModal');
+            if (modalElement && typeof bootstrap !== 'undefined') {
+                var modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
+            }
+            showSuccess('Пользователь успешно обновлен!');
+        })
+        .catch(function(error) {
+            console.error('Ошибка обновления пользователя:', error);
+            showError('Ошибка обновления пользователя: ' + (error.message || 'Неизвестная ошибка'));
+        })
+        .finally(function() {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Сохранить изменения';
+            }
+        });
 }
 
-async function handleDeleteSubmit(event) {
+function handleDeleteSubmit(event) {
     event.preventDefault();
-    const form = event.target;
-    const formData = new FormData(form);
 
-    const idValue = formData.get('id');
-    const id = typeof idValue === 'string' ? parseInt(idValue) : 0;
+    var form = event.target;
+    var formData = new FormData(form);
 
-    if (!confirm('Вы уверены, что хотите удалить этого пользователя?')) {
-        return;
+    var idValue = formData.get('id');
+    var id = typeof idValue === 'string' ? parseInt(idValue) : 0;
+
+    var submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Удаление...';
     }
 
-    try {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Удаление...';
-        }
-
-        await API.users.delete(id);
-        await loadUsers();
-
-        const modalElement = document.getElementById('deleteModal');
-        if (modalElement && typeof bootstrap !== 'undefined') {
-            const modal = bootstrap.Modal.getInstance(modalElement);
-            if (modal) {
-                modal.hide();
+    API.users.delete(id)
+        .then(function() {
+            return loadUsers();
+        })
+        .then(function() {
+            var modalElement = document.getElementById('deleteModal');
+            if (modalElement && typeof bootstrap !== 'undefined') {
+                var modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                    modal.hide();
+                }
             }
-        }
-
-        showSuccess('Пользователь успешно удален!');
-    } catch (error) {
-        console.error('Ошибка удаления пользователя:', error);
-        showError('Ошибка удаления пользователя: ' + (error.message || 'Неизвестная ошибка'));
-    } finally {
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Delete';
-        }
-    }
-}
-
-// ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
-
-function escapeHtml(text) {
-    if (!text) return '';
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-function escapeJson(json) {
-    return json.replace(/"/g, '&quot;');
-}
-
-function showError(message) {
-    let container = document.getElementById('message-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'message-container';
-        container.style.position = 'fixed';
-        container.style.top = '20px';
-        container.style.right = '20px';
-        container.style.zIndex = '9999';
-        document.body.appendChild(container);
-    }
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-danger alert-dismissible fade show';
-    alert.innerHTML = escapeHtml(message) + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
-    container.appendChild(alert);
-    setTimeout(function() {
-        if (alert.parentNode) {
-            alert.remove();
-        }
-    }, 5000);
-}
-
-function showSuccess(message) {
-    let container = document.getElementById('message-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'message-container';
-        container.style.position = 'fixed';
-        container.style.top = '20px';
-        container.style.right = '20px';
-        container.style.zIndex = '9999';
-        document.body.appendChild(container);
-    }
-    const alert = document.createElement('div');
-    alert.className = 'alert alert-success alert-dismissible fade show';
-    alert.innerHTML = escapeHtml(message) + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
-    container.appendChild(alert);
-    setTimeout(function() {
-        if (alert.parentNode) {
-            alert.remove();
-        }
-    }, 3000);
+            showSuccess('Пользователь успешно удален!');
+        })
+        .catch(function(error) {
+            console.error('Ошибка удаления пользователя:', error);
+            showError('Ошибка удаления пользователя: ' + (error.message || 'Неизвестная ошибка'));
+        })
+        .finally(function() {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Удалить';
+            }
+        });
 }

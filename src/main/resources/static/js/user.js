@@ -2,6 +2,7 @@
  * user.js - Управление страницей пользователя
  * Загружает данные текущего пользователя через REST API
  */
+'use strict';
 
 document.addEventListener('DOMContentLoaded', function() {
     loadUserInfo().catch(function(error) {
@@ -37,15 +38,7 @@ function renderUserInfo(user) {
         return;
     }
 
-    // Формируем строку с ролями
-    var rolesString = '';
-    if (user.roles && user.roles.length > 0) {
-        var roleNames = [];
-        for (var i = 0; i < user.roles.length; i++) {
-            roleNames.push(user.roles[i].name.replace('ROLE_', ''));
-        }
-        rolesString = roleNames.join(', ');
-    }
+    var rolesString = getUserRolesString(user.roles);
 
     tbody.innerHTML =
         '<tr>' +
@@ -56,47 +49,4 @@ function renderUserInfo(user) {
         '<td>' + escapeHtml(user.email || '') + '</td>' +
         '<td>' + escapeHtml(rolesString) + '</td>' +
         '</tr>';
-}
-
-/**
- * Экранирует HTML-сущности для предотвращения XSS
- * @param {string} text - Текст для экранирования
- * @returns {string} - Экранированный текст
- */
-function escapeHtml(text) {
-    if (!text) return '';
-    var div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
-}
-
-/**
- * Показывает сообщение об ошибке
- * @param {string} message - Текст сообщения
- */
-function showError(message) {
-    // Ищем или создаем контейнер для сообщений
-    var container = document.getElementById('message-container');
-    if (!container) {
-        container = document.createElement('div');
-        container.id = 'message-container';
-        container.style.position = 'fixed';
-        container.style.top = '20px';
-        container.style.right = '20px';
-        container.style.zIndex = '9999';
-        document.body.appendChild(container);
-    }
-
-    var alert = document.createElement('div');
-    alert.className = 'alert alert-danger alert-dismissible fade show';
-    alert.innerHTML = escapeHtml(message) +
-        '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
-    container.appendChild(alert);
-
-    // Автоматическое скрытие через 5 секунд
-    setTimeout(function() {
-        if (alert.parentNode) {
-            alert.remove();
-        }
-    }, 5000);
 }

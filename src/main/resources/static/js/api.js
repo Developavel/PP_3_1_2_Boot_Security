@@ -3,42 +3,45 @@
  * Все методы возвращают Promise
  * Поддерживает CSRF-защиту
  */
+'use strict';
 
-const API = {
+var API = {
     baseUrl: '',
 
     _getCsrfToken: function() {
-        const tokenMeta = document.querySelector('meta[name="_csrf"]');
-        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+        var tokenMeta = document.querySelector('meta[name="_csrf"]');
+        var headerMeta = document.querySelector('meta[name="_csrf_header"]');
         return {
             token: tokenMeta ? tokenMeta.content : null,
             header: headerMeta ? headerMeta.content : null
         };
     },
 
-    _handleResponse: async function(response) {
-        if (!response.ok) {
-            let errorMessage;
-            try {
-                const errorData = await response.json();
-                errorMessage = errorData.message || errorData.error || 'HTTP error! status: ' + response.status;
-            } catch (_) {
-                const text = await response.text();
-                errorMessage = text || 'HTTP error! status: ' + response.status;
-            }
-            throw new Error(errorMessage);
-        }
+    _handleResponse: function(response) {
+        // ✅ Исправлено: сначала проверяем 204 No Content
         if (response.status === 204) {
             return null;
         }
-        return response.json();
+
+        return response.json().then(function(data) {
+            if (!response.ok) {
+                var errorMessage = data.message || data.error || 'HTTP error! status: ' + response.status;
+                throw new Error(errorMessage);
+            }
+            return data;
+        }).catch(function(error) {
+            if (error instanceof SyntaxError) {
+                throw new Error('Ошибка парсинга ответа сервера');
+            }
+            throw error;
+        });
     },
 
-    _request: async function(endpoint, options) {
+    _request: function(endpoint, options) {
         options = options || {};
-        const csrf = this._getCsrfToken();
+        var csrf = this._getCsrfToken();
 
-        const headers = {
+        var headers = {
             'Content-Type': 'application/json'
         };
 
@@ -54,7 +57,7 @@ const API = {
             headers[csrf.header] = csrf.token;
         }
 
-        const config = {
+        var config = {
             headers: headers,
             credentials: 'same-origin'
         };
@@ -65,8 +68,10 @@ const API = {
             }
         }
 
-        const response = await fetch(this.baseUrl + endpoint, config);
-        return this._handleResponse(response);
+        return fetch(this.baseUrl + endpoint, config)
+            .then(function(response) {
+                return API._handleResponse(response);
+            });
     },
 
     users: {
@@ -133,7 +138,6 @@ const API = {
     }
 };
 
-// Поддержка модулей (если используется)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = API;
 }
