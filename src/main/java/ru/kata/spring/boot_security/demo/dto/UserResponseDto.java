@@ -43,16 +43,4 @@ public class UserResponseDto {
         dto.setRolesAsString(user.getRolesAsString());
         return dto;
     }
-
-    /**
-     * Конвертирует список User в список UserResponseDto
-     */
-    public static List<UserResponseDto> fromUsers(List<User> users) {
-        if (users == null) {
-            return List.of();
-        }
-        return users.stream()
-                .map(UserResponseDto::fromUser)
-                .collect(Collectors.toList());
-    }
 }

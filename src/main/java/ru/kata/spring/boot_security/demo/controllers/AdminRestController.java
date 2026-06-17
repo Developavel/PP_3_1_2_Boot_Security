@@ -1,4 +1,4 @@
-package ru.kata.spring.boot_security.demo.controllers.rest;
+package ru.kata.spring.boot_security.demo.controllers;
 
 import lombok.RequiredArgsConstructor;
 

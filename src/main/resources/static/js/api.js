@@ -7,20 +7,24 @@
 const API = {
     baseUrl: '',
 
-    _getCsrfToken() {
-        const token = document.querySelector('meta[name="_csrf"]')?.content;
-        const header = document.querySelector('meta[name="_csrf_header"]')?.content;
-        return { token, header };
+    _getCsrfToken: function() {
+        const tokenMeta = document.querySelector('meta[name="_csrf"]');
+        const headerMeta = document.querySelector('meta[name="_csrf_header"]');
+        return {
+            token: tokenMeta ? tokenMeta.content : null,
+            header: headerMeta ? headerMeta.content : null
+        };
     },
 
-    async _handleResponse(response) {
+    _handleResponse: async function(response) {
         if (!response.ok) {
             let errorMessage;
             try {
                 const errorData = await response.json();
-                errorMessage = errorData.message || errorData.error || `HTTP error! status: ${response.status}`;
-            } catch {
-                errorMessage = await response.text() || `HTTP error! status: ${response.status}`;
+                errorMessage = errorData.message || errorData.error || 'HTTP error! status: ' + response.status;
+            } catch (_) {
+                const text = await response.text();
+                errorMessage = text || 'HTTP error! status: ' + response.status;
             }
             throw new Error(errorMessage);
         }
@@ -30,41 +34,58 @@ const API = {
         return response.json();
     },
 
-    async _request(endpoint, options = {}) {
-        const { token, header } = this._getCsrfToken();
+    _request: async function(endpoint, options) {
+        options = options || {};
+        const csrf = this._getCsrfToken();
 
         const headers = {
-            'Content-Type': 'application/json',
-            ...options.headers
+            'Content-Type': 'application/json'
         };
 
-        if (token && header && options.method && options.method !== 'GET') {
-            headers[header] = token;
+        if (options.headers) {
+            for (var key in options.headers) {
+                if (options.headers.hasOwnProperty(key)) {
+                    headers[key] = options.headers[key];
+                }
+            }
+        }
+
+        if (csrf.token && csrf.header && options.method && options.method !== 'GET') {
+            headers[csrf.header] = csrf.token;
         }
 
         const config = {
-            headers,
-            credentials: 'same-origin',
-            ...options
+            headers: headers,
+            credentials: 'same-origin'
         };
 
-        const response = await fetch(`${this.baseUrl}${endpoint}`, config);
+        for (var prop in options) {
+            if (options.hasOwnProperty(prop) && prop !== 'headers') {
+                config[prop] = options[prop];
+            }
+        }
+
+        const response = await fetch(this.baseUrl + endpoint, config);
         return this._handleResponse(response);
     },
 
     users: {
-        getAll: () => API._request('/api/admin/users'),
+        getAll: function() {
+            return API._request('/api/admin/users');
+        },
 
-        getById: (id) => API._request(`/api/admin/users/${id}`),
+        getById: function(id) {
+            return API._request('/api/admin/users/' + id);
+        },
 
-        create: (userData) => {
-            const payload = {
+        create: function(userData) {
+            var payload = {
                 firstName: userData.firstName,
                 lastName: userData.lastName,
                 age: userData.age,
                 email: userData.email,
                 password: userData.password,
-                roleIds: userData.roleIds || []  // ← ДОБАВЛЕНО
+                roleIds: userData.roleIds || []
             };
 
             return API._request('/api/admin/users', {
@@ -73,39 +94,46 @@ const API = {
             });
         },
 
-        update: (id, userData) => {
-            const payload = {
+        update: function(id, userData) {
+            var payload = {
                 firstName: userData.firstName,
                 lastName: userData.lastName,
                 age: userData.age,
                 email: userData.email,
-                roleIds: userData.roleIds || []  // ← ДОБАВЛЕНО! ЭТО БЫЛО ПРОБЛЕМОЙ!
+                roleIds: userData.roleIds || []
             };
 
             if (userData.newPassword) {
                 payload.password = userData.newPassword;
             }
 
-            return API._request(`/api/admin/users/${id}`, {
+            return API._request('/api/admin/users/' + id, {
                 method: 'PUT',
                 body: JSON.stringify(payload)
             });
         },
 
-        delete: (id) => API._request(`/api/admin/users/${id}`, {
-            method: 'DELETE'
-        })
+        delete: function(id) {
+            return API._request('/api/admin/users/' + id, {
+                method: 'DELETE'
+            });
+        }
     },
 
     user: {
-        getCurrent: () => API._request('/api/user')
+        getCurrent: function() {
+            return API._request('/api/user');
+        }
     },
 
     roles: {
-        getAll: () => API._request('/api/admin/roles')
+        getAll: function() {
+            return API._request('/api/admin/roles');
+        }
     }
 };
 
+// Поддержка модулей (если используется)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = API;
 }

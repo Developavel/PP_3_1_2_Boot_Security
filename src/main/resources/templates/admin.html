@@ -8,10 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin panel</title>
 
+  <!-- CSRF защита -->
   <meta name="_csrf" th:content="${_csrf.token}"/>
   <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
   <link th:href="@{/css/style.css}" rel="stylesheet">
 </head>
 
@@ -24,10 +27,12 @@
 <div class="container-fluid">
   <div class="row">
 
+    <!-- Боковое меню -->
     <div class="col-2">
       <div th:replace="~{fragments/sidebar :: sidebar(activePage='admin')}"></div>
     </div>
 
+    <!-- Контент -->
     <div class="col-10 content">
       <h1 class="page-title">Admin panel</h1>
 
@@ -59,8 +64,10 @@
               </div>
 
               <div class="p-3">
+                <!-- Контейнер для сообщений -->
                 <div id="message-container"></div>
 
+                <!-- Таблица пользователей -->
                 <table class="table table-striped align-middle">
                   <thead>
                   <tr>
@@ -75,6 +82,7 @@
                   </tr>
                   </thead>
                   <tbody id="users-table-body">
+                  <!-- Данные загружаются через JavaScript -->
                   </tbody>
                 </table>
               </div>
@@ -86,33 +94,33 @@
               <form id="createUserForm" class="form-wrapper">
 
                 <div class="mb-3">
-                  <label class="form-label fw-bold">First name</label>
-                  <input type="text" class="form-control" name="firstName" required>
+                  <label for="createFirstName" class="form-label fw-bold">First name</label>
+                  <input type="text" class="form-control" id="createFirstName" name="firstName" required>
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label fw-bold">Last name</label>
-                  <input type="text" class="form-control" name="lastName" required>
+                  <label for="createLastName" class="form-label fw-bold">Last name</label>
+                  <input type="text" class="form-control" id="createLastName" name="lastName" required>
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label fw-bold">Age</label>
-                  <input type="number" class="form-control" name="age" min="1" max="150" required>
+                  <label for="createAge" class="form-label fw-bold">Age</label>
+                  <input type="number" class="form-control" id="createAge" name="age" min="1" max="150" required>
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label fw-bold">Email</label>
-                  <input type="email" class="form-control" name="email" required>
+                  <label for="createEmail" class="form-label fw-bold">Email</label>
+                  <input type="email" class="form-control" id="createEmail" name="email" required>
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label fw-bold">Password</label>
-                  <input type="password" class="form-control" name="password" minlength="4" required>
+                  <label for="createPassword" class="form-label fw-bold">Password</label>
+                  <input type="password" class="form-control" id="createPassword" name="password" minlength="4" required>
                 </div>
 
                 <div class="mb-4">
-                  <label class="form-label fw-bold">Role</label>
-                  <select class="form-select" name="roleIds" multiple size="3" required>
+                  <label for="createRoleIds" class="form-label fw-bold">Role</label>
+                  <select class="form-select" id="createRoleIds" name="roleIds" multiple size="3" required>
                   </select>
                   <small class="text-muted">Hold Ctrl (or Cmd on Mac) to select multiple roles</small>
                 </div>
@@ -144,39 +152,39 @@
           <input type="hidden" name="id" id="editUserId">
 
           <div class="mb-3">
-            <label class="form-label fw-bold">ID</label>
+            <label for="editUserIdDisplay" class="form-label fw-bold">ID</label>
             <input type="text" class="form-control" id="editUserIdDisplay" readonly>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">First name</label>
-            <input type="text" class="form-control" name="firstName" id="editFirstName" required>
+            <label for="editFirstName" class="form-label fw-bold">First name</label>
+            <input type="text" class="form-control" id="editFirstName" name="firstName" required>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Last name</label>
-            <input type="text" class="form-control" name="lastName" id="editLastName" required>
+            <label for="editLastName" class="form-label fw-bold">Last name</label>
+            <input type="text" class="form-control" id="editLastName" name="lastName" required>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Age</label>
-            <input type="number" class="form-control" name="age" id="editAge" min="1" max="150" required>
+            <label for="editAge" class="form-label fw-bold">Age</label>
+            <input type="number" class="form-control" id="editAge" name="age" min="1" max="150" required>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Email</label>
-            <input type="email" class="form-control" name="email" id="editEmail" required>
+            <label for="editEmail" class="form-label fw-bold">Email</label>
+            <input type="email" class="form-control" id="editEmail" name="email" required>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Password</label>
-            <input type="password" class="form-control" name="newPassword" id="editPassword" placeholder="Leave blank to keep current" minlength="4">
+            <label for="editPassword" class="form-label fw-bold">Password</label>
+            <input type="password" class="form-control" id="editPassword" name="newPassword" placeholder="Leave blank to keep current" minlength="4">
             <small class="text-muted">Leave blank to keep current password</small>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Role</label>
-            <select class="form-select" name="roleIds" multiple size="3" id="editRoleIds" required>
+            <label for="editRoleIds" class="form-label fw-bold">Role</label>
+            <select class="form-select" id="editRoleIds" name="roleIds" multiple size="3" required>
             </select>
             <small class="text-muted">Select at least one role</small>
           </div>
@@ -207,32 +215,32 @@
           <input type="hidden" name="id" id="deleteFormUserId">
 
           <div class="mb-3">
-            <label class="form-label fw-bold">ID</label>
+            <label for="deleteUserId" class="form-label fw-bold">ID</label>
             <input type="text" class="form-control" id="deleteUserId" readonly>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">First name</label>
+            <label for="deleteUserFirstName" class="form-label fw-bold">First name</label>
             <input type="text" class="form-control" id="deleteUserFirstName" readonly>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Last name</label>
+            <label for="deleteUserLastName" class="form-label fw-bold">Last name</label>
             <input type="text" class="form-control" id="deleteUserLastName" readonly>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Age</label>
+            <label for="deleteUserAge" class="form-label fw-bold">Age</label>
             <input type="text" class="form-control" id="deleteUserAge" readonly>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Email</label>
+            <label for="deleteUserEmail" class="form-label fw-bold">Email</label>
             <input type="text" class="form-control" id="deleteUserEmail" readonly>
           </div>
 
           <div class="mb-3">
-            <label class="form-label fw-bold">Role</label>
+            <label for="deleteUserRoles" class="form-label fw-bold">Role</label>
             <input type="text" class="form-control" id="deleteUserRoles" readonly>
           </div>
         </div>
@@ -249,6 +257,7 @@
 <!-- ==================== ПОДКЛЮЧЕНИЕ СКРИПТОВ ==================== -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script th:src="@{/js/api.js}"></script>
+<!-- Добавляем версию для предотвращения кэширования -->
 <script th:src="@{/js/admin.js(v=${new java.util.Date().getTime()})}"></script>
 
 </body>

@@ -99,7 +99,7 @@ function getUserRolesString(roles) {
 function initModals() {
     const editModal = document.getElementById('editModal');
     if (editModal) {
-        editModal.addEventListener('show.bs.modal', (event) => {
+        editModal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
             if (button && button.dataset.user) {
                 try {
@@ -111,12 +111,14 @@ function initModals() {
             }
         });
         const editForm = document.getElementById('editForm');
-        if (editForm) editForm.addEventListener('submit', handleEditSubmit);
+        if (editForm) {
+            editForm.addEventListener('submit', handleEditSubmit);
+        }
     }
 
     const deleteModal = document.getElementById('deleteModal');
     if (deleteModal) {
-        deleteModal.addEventListener('show.bs.modal', (event) => {
+        deleteModal.addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget;
             if (button && button.dataset.user) {
                 try {
@@ -128,7 +130,9 @@ function initModals() {
             }
         });
         const deleteForm = document.getElementById('deleteForm');
-        if (deleteForm) deleteForm.addEventListener('submit', handleDeleteSubmit);
+        if (deleteForm) {
+            deleteForm.addEventListener('submit', handleDeleteSubmit);
+        }
     }
 }
 
@@ -143,8 +147,10 @@ function fillEditModal(user) {
 
     const roleSelect = document.getElementById('editRoleIds');
     if (roleSelect && user.roles) {
-        const userRoleIds = user.roles.map(role => role.id.toString());
-        Array.from(roleSelect.options).forEach(option => {
+        const userRoleIds = user.roles.map(function(role) {
+            return role.id.toString();
+        });
+        Array.from(roleSelect.options).forEach(function(option) {
             option.selected = userRoleIds.includes(option.value);
         });
     }
@@ -164,7 +170,9 @@ function fillDeleteModal(user) {
 
 function initEventHandlers() {
     const createForm = document.getElementById('createUserForm');
-    if (createForm) createForm.addEventListener('submit', handleCreateSubmit);
+    if (createForm) {
+        createForm.addEventListener('submit', handleCreateSubmit);
+    }
 }
 
 async function handleCreateSubmit(event) {
@@ -172,13 +180,25 @@ async function handleCreateSubmit(event) {
     const form = event.target;
     const formData = new FormData(form);
 
+    // Получаем значения с проверкой на null
+    const firstName = formData.get('firstName');
+    const lastName = formData.get('lastName');
+    const ageValue = formData.get('age');
+    const email = formData.get('email');
+    const password = formData.get('password');
+    const roleIdsRaw = formData.getAll('roleIds');
+
     const userData = {
-        firstName: formData.get('firstName'),
-        lastName: formData.get('lastName'),
-        age: parseInt(formData.get('age')),
-        email: formData.get('email'),
-        password: formData.get('password'),
-        roleIds: formData.getAll('roleIds').map(id => parseInt(id))
+        firstName: typeof firstName === 'string' ? firstName : '',
+        lastName: typeof lastName === 'string' ? lastName : '',
+        age: typeof ageValue === 'string' ? parseInt(ageValue) : 0,
+        email: typeof email === 'string' ? email : '',
+        password: typeof password === 'string' ? password : '',
+        roleIds: roleIdsRaw.map(function(id) {
+            return typeof id === 'string' ? parseInt(id) : 0;
+        }).filter(function(id) {
+            return !isNaN(id);
+        })
     };
 
     if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
@@ -188,8 +208,10 @@ async function handleCreateSubmit(event) {
 
     try {
         const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Создание...';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Создание...';
+        }
 
         await API.users.create(userData);
         await loadUsers();
@@ -197,39 +219,53 @@ async function handleCreateSubmit(event) {
         showSuccess('Пользователь успешно создан!');
 
         const usersTab = document.getElementById('users-table-tab');
-        if (usersTab) {
+        if (usersTab && typeof bootstrap !== 'undefined') {
             const tab = new bootstrap.Tab(usersTab);
             tab.show();
         }
     } catch (error) {
         console.error('Ошибка создания пользователя:', error);
-        showError(`Ошибка создания пользователя: ${error.message}`);
+        showError('Ошибка создания пользователя: ' + (error.message || 'Неизвестная ошибка'));
     } finally {
         const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Add new user';
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Add new user';
+        }
     }
 }
 
-// ==================== ✅ ИСПРАВЛЕННАЯ ВЕРСИЯ ====================
 async function handleEditSubmit(event) {
     event.preventDefault();
 
     const form = event.target;
     const formData = new FormData(form);
 
-    const id = parseInt(formData.get('id'));
+    const idValue = formData.get('id');
+    const id = typeof idValue === 'string' ? parseInt(idValue) : 0;
 
-    // ✅ ПРАВИЛЬНЫЙ СПОСОБ: получаем выбранные роли напрямую из select
     const roleSelect = document.getElementById('editRoleIds');
-    const selectedRoles = Array.from(roleSelect.selectedOptions).map(opt => parseInt(opt.value));
+    let selectedRoles = [];
+    if (roleSelect) {
+        selectedRoles = Array.from(roleSelect.selectedOptions).map(function(opt) {
+            return parseInt(opt.value);
+        }).filter(function(id) {
+            return !isNaN(id);
+        });
+    }
+
+    const firstName = formData.get('firstName');
+    const lastName = formData.get('lastName');
+    const ageValue = formData.get('age');
+    const email = formData.get('email');
+    const newPassword = formData.get('newPassword');
 
     const userData = {
-        firstName: formData.get('firstName'),
-        lastName: formData.get('lastName'),
-        age: parseInt(formData.get('age')),
-        email: formData.get('email'),
-        newPassword: formData.get('newPassword') || undefined,
+        firstName: typeof firstName === 'string' ? firstName : '',
+        lastName: typeof lastName === 'string' ? lastName : '',
+        age: typeof ageValue === 'string' ? parseInt(ageValue) : 0,
+        email: typeof email === 'string' ? email : '',
+        newPassword: typeof newPassword === 'string' && newPassword ? newPassword : undefined,
         roleIds: selectedRoles
     };
 
@@ -245,23 +281,32 @@ async function handleEditSubmit(event) {
 
     try {
         const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Сохранение...';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Сохранение...';
+        }
 
         await API.users.update(id, userData);
         await loadUsers();
 
-        const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
-        if (modal) modal.hide();
+        const modalElement = document.getElementById('editModal');
+        if (modalElement && typeof bootstrap !== 'undefined') {
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+        }
 
         showSuccess('Пользователь успешно обновлен!');
     } catch (error) {
         console.error('Ошибка обновления пользователя:', error);
-        showError(`Ошибка обновления пользователя: ${error.message}`);
+        showError('Ошибка обновления пользователя: ' + (error.message || 'Неизвестная ошибка'));
     } finally {
         const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Edit';
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Edit';
+        }
     }
 }
 
@@ -269,29 +314,42 @@ async function handleDeleteSubmit(event) {
     event.preventDefault();
     const form = event.target;
     const formData = new FormData(form);
-    const id = parseInt(formData.get('id'));
 
-    if (!confirm('Вы уверены, что хотите удалить этого пользователя?')) return;
+    const idValue = formData.get('id');
+    const id = typeof idValue === 'string' ? parseInt(idValue) : 0;
+
+    if (!confirm('Вы уверены, что хотите удалить этого пользователя?')) {
+        return;
+    }
 
     try {
         const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Удаление...';
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Удаление...';
+        }
 
         await API.users.delete(id);
         await loadUsers();
 
-        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-        if (modal) modal.hide();
+        const modalElement = document.getElementById('deleteModal');
+        if (modalElement && typeof bootstrap !== 'undefined') {
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+                modal.hide();
+            }
+        }
 
         showSuccess('Пользователь успешно удален!');
     } catch (error) {
         console.error('Ошибка удаления пользователя:', error);
-        showError(`Ошибка удаления пользователя: ${error.message}`);
+        showError('Ошибка удаления пользователя: ' + (error.message || 'Неизвестная ошибка'));
     } finally {
         const submitBtn = form.querySelector('button[type="submit"]');
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Delete';
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Delete';
+        }
     }
 }
 
@@ -321,9 +379,13 @@ function showError(message) {
     }
     const alert = document.createElement('div');
     alert.className = 'alert alert-danger alert-dismissible fade show';
-    alert.innerHTML = `${escapeHtml(message)}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    alert.innerHTML = escapeHtml(message) + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
     container.appendChild(alert);
-    setTimeout(() => { if (alert.parentNode) alert.remove(); }, 5000);
+    setTimeout(function() {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 5000);
 }
 
 function showSuccess(message) {
@@ -339,7 +401,11 @@ function showSuccess(message) {
     }
     const alert = document.createElement('div');
     alert.className = 'alert alert-success alert-dismissible fade show';
-    alert.innerHTML = `${escapeHtml(message)}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+    alert.innerHTML = escapeHtml(message) + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
     container.appendChild(alert);
-    setTimeout(() => { if (alert.parentNode) alert.remove(); }, 3000);
+    setTimeout(function() {
+        if (alert.parentNode) {
+            alert.remove();
+        }
+    }, 3000);
 }

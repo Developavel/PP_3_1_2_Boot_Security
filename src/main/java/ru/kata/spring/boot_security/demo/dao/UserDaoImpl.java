@@ -80,7 +80,7 @@ public class UserDaoImpl implements UserDao {
 
     /**
      * Вспомогательный метод для обработки запросов с одним результатом
-     * Возвращает Optional.empty() если результат не найден
+     * return Optional.empty() если результат не найден
      */
     private <T> Optional<T> getSingleResult(TypedQuery<T> query) {
         try {

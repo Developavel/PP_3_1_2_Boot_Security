@@ -4,7 +4,7 @@
 
   <nav class="nav flex-column pt-3">
 
-    <!-- Раздел администратора -->
+    <!-- Ссылка на админ-панель (видна только администраторам) -->
     <a sec:authorize="hasRole('ADMIN')"
        class="nav-link"
        th:classappend="${activePage == 'admin'} ? ' active'"
@@ -12,7 +12,7 @@
       Admin
     </a>
 
-    <!-- Личный кабинет пользователя -->
+    <!-- Ссылка на личный кабинет пользователя (видна всем авторизованным) -->
     <a class="nav-link"
        th:classappend="${activePage == 'user'} ? ' active'"
        th:href="@{/user}">
