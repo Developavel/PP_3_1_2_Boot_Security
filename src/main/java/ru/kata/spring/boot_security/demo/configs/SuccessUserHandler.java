@@ -10,10 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Set;
 
-/**
- * Перенаправляет пользователя после успешного входа.
- * Администратор направляется на /admin, обычный пользователь на /user.
- */
 @Component
 public class SuccessUserHandler implements AuthenticationSuccessHandler {
 

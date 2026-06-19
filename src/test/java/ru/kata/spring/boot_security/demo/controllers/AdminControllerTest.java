@@ -10,33 +10,30 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Интеграционные тесты для AdminRestController.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
-class AdminRestControllerTest {
+class AdminControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    /**
-     * Проверяет, что администратор получает список пользователей (200 OK).
-     */
     @Test
     @WithMockUser(roles = "ADMIN")
     void getAllUsers_ShouldReturnOk_ForAdmin() throws Exception {
-        mockMvc.perform(get("/api/admin/users"))
+        mockMvc.perform(get("/admin/api/users"))
                 .andExpect(status().isOk());
     }
 
-    /**
-     * Проверяет, что обычный пользователь получает ошибку доступа (403 Forbidden).
-     */
     @Test
     @WithMockUser(roles = "USER")
     void getAllUsers_ShouldBeForbidden_ForUser() throws Exception {
-        mockMvc.perform(get("/api/admin/users"))
+        mockMvc.perform(get("/admin/api/users"))
                 .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void getAllUsers_ShouldBeUnauthorized_ForAnonymous() throws Exception {
+        mockMvc.perform(get("/admin/api/users"))
+                .andExpect(status().is3xxRedirection()); // Редирект на страницу логина
     }
 }

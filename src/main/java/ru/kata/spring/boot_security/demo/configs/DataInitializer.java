@@ -14,9 +14,6 @@ import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import java.util.Set;
 
-/**
- * Инициализирует роли и администратора при первом запуске.
- */
 @Slf4j
 @Component
 @RequiredArgsConstructor

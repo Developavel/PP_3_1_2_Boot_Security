@@ -75,11 +75,11 @@ const API = {
 
     users: {
         getAll: function() {
-            return API._request('/api/admin/users');
+            return API._request('/admin/api/users');
         },
 
         getById: function(id) {
-            return API._request('/api/admin/users/' + id);
+            return API._request('/admin/api/users/' + id);
         },
 
         create: function(userData) {
@@ -92,7 +92,7 @@ const API = {
                 roleIds: userData.roleIds || []
             };
 
-            return API._request('/api/admin/users', {
+            return API._request('/admin/api/users', {
                 method: 'POST',
                 body: JSON.stringify(payload)
             });
@@ -111,14 +111,14 @@ const API = {
                 payload.password = userData.newPassword;
             }
 
-            return API._request('/api/admin/users/' + id, {
+            return API._request('/admin/api/users/' + id, {
                 method: 'PUT',
                 body: JSON.stringify(payload)
             });
         },
 
         delete: function(id) {
-            return API._request('/api/admin/users/' + id, {
+            return API._request('/admin/api/users/' + id, {
                 method: 'DELETE'
             });
         }
@@ -126,7 +126,7 @@ const API = {
 
     user: {
         getCurrent: function() {
-            return API._request('/api/user');
+            return API._request('/user/api/current');
         }
     },
 

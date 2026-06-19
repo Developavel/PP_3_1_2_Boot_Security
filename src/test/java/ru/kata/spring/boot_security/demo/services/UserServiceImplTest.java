@@ -5,112 +5,160 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.kata.spring.boot_security.demo.model.Role;
+
+import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
-import java.util.Optional;
-import java.util.Set;
-
-import javax.persistence.EntityNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-/**
- * Unit-тесты для UserServiceImpl.
- */
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
 
-    @Mock
-    private RoleService roleService;
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
     @InjectMocks
     private UserServiceImpl userService;
 
-    /**
-     * Проверяет, что при создании пользователя без ролей назначается роль по умолчанию.
-     */
     @Test
-    void create_ShouldSetDefaultRole_WhenRoleIdsIsEmpty() {
+    void findById_ShouldReturnUser_WhenExists() {
+        // Given
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        user.setEmail("test@mail.ru");
+
+        when(userRepository.findByIdWithRoles(userId)).thenReturn(Optional.of(user));
+
+        // When
+        Optional<User> result = userService.findById(userId);
+
+        // Then
+        assertThat(result).isPresent();
+        assertThat(result.get().getId()).isEqualTo(userId);
+        verify(userRepository).findByIdWithRoles(userId);
+    }
+
+    @Test
+    void findById_ShouldReturnEmpty_WhenNotFound() {
+        // Given
+        Long userId = 999L;
+        when(userRepository.findByIdWithRoles(userId)).thenReturn(Optional.empty());
+
+        // When
+        Optional<User> result = userService.findById(userId);
+
+        // Then
+        assertThat(result).isEmpty();
+        verify(userRepository).findByIdWithRoles(userId);
+    }
+
+    @Test
+    void save_ShouldCallRepositorySave() {
+        // Given
         User user = new User();
         user.setEmail("test@mail.ru");
         user.setPassword("pass");
-        Role defaultRole = new Role("ROLE_USER");
 
-        when(roleService.getDefaultRole()).thenReturn(defaultRole);
-        when(passwordEncoder.encode("pass")).thenReturn("encodedPass");
+        when(userRepository.save(user)).thenReturn(user);
 
-        userService.create(user, null);
+        // When
+        User result = userService.save(user);
 
+        // Then
+        assertThat(result).isEqualTo(user);
         verify(userRepository).save(user);
-        assertThat(user.getRoles()).containsExactly(defaultRole);
-        assertThat(user.getPassword()).isEqualTo("encodedPass");
     }
 
-    /**
-     * Проверяет, что при создании пользователя с существующим email выбрасывается исключение.
-     */
     @Test
-    void create_ShouldThrowException_WhenEmailExists() {
-        User user = new User();
-        user.setEmail("existing@mail.ru");
-        user.setPassword("pass");
+    void deleteById_ShouldDelete_WhenExists() {
+        // Given
+        Long userId = 1L;
+        when(userRepository.existsById(userId)).thenReturn(true);
 
-        when(userRepository.existsByEmail("existing@mail.ru")).thenReturn(true);
+        // When
+        userService.deleteById(userId);
 
-        assertThatThrownBy(() -> userService.create(user, null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("уже существует");
+        // Then
+        verify(userRepository).deleteById(userId);
     }
 
-    /**
-     * Проверяет, что при обновлении без ролей выбрасывается исключение.
-     */
     @Test
-    void update_ShouldThrowException_WhenRoleIdsIsEmpty() {
-        User user = new User();
-        user.setId(1L);
+    void deleteById_ShouldThrowException_WhenNotFound() {
+        // Given
+        Long userId = 999L;
+        when(userRepository.existsById(userId)).thenReturn(false);
 
-        assertThatThrownBy(() -> userService.update(user, null, null))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("одну роль");
-    }
-
-    /**
-     * Проверяет, что при обновлении несуществующего пользователя выбрасывается исключение.
-     */
-    @Test
-    void update_ShouldThrowException_WhenUserNotFound() {
-        User user = new User();
-        user.setId(999L);
-        Set<Long> roleIds = Set.of(1L);
-
-        when(userRepository.findByIdWithRoles(999L)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() -> userService.update(user, roleIds, null))
+        // When & Then
+        assertThatThrownBy(() -> userService.deleteById(userId))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("не найден");
+                .hasMessageContaining("not found");
+        verify(userRepository, never()).deleteById(anyLong());
     }
 
-    /**
-     * Проверяет, что при удалении несуществующего пользователя выбрасывается исключение.
-     */
     @Test
-    void delete_ShouldThrowException_WhenUserNotFound() {
-        when(userRepository.existsById(999L)).thenReturn(false);
+    void existsByEmail_ShouldReturnTrue_WhenExists() {
+        // Given
+        String email = "test@mail.ru";
+        when(userRepository.existsByEmail(email)).thenReturn(true);
 
-        assertThatThrownBy(() -> userService.delete(999L))
-                .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("не найден");
+        // When
+        boolean result = userService.existsByEmail(email);
+
+        // Then
+        assertThat(result).isTrue();
+        verify(userRepository).existsByEmail(email);
+    }
+
+    @Test
+    void existsByEmail_ShouldReturnFalse_WhenNotFound() {
+        // Given
+        String email = "nonexistent@mail.ru";
+        when(userRepository.existsByEmail(email)).thenReturn(false);
+
+        // When
+        boolean result = userService.existsByEmail(email);
+
+        // Then
+        assertThat(result).isFalse();
+        verify(userRepository).existsByEmail(email);
+    }
+
+    @Test
+    void findAll_ShouldReturnListOfUsers() {
+        // Given
+        when(userRepository.findAllWithRoles()).thenReturn(java.util.List.of(new User(), new User()));
+
+        // When
+        java.util.List<User> result = userService.findAll();
+
+        // Then
+        assertThat(result).hasSize(2);
+        verify(userRepository).findAllWithRoles();
+    }
+
+    @Test
+    void findByEmail_ShouldReturnUser_WhenExists() {
+        // Given
+        String email = "test@mail.ru";
+        User user = new User();
+        user.setEmail(email);
+
+        when(userRepository.findByEmailWithRoles(email)).thenReturn(Optional.of(user));
+
+        // When
+        Optional<User> result = userService.findByEmail(email);
+
+        // Then
+        assertThat(result).isPresent();
+        assertThat(result.get().getEmail()).isEqualTo(email);
+        verify(userRepository).findByEmailWithRoles(email);
     }
 }

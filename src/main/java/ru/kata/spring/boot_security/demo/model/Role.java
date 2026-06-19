@@ -14,10 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-/**
- * Сущность роли для Spring Security.
- * Название роли должно быть уникальным (например, ROLE_USER, ROLE_ADMIN).
- */
 @Getter
 @Setter
 @ToString(onlyExplicitlyIncluded = true)

@@ -12,10 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import ru.kata.spring.boot_security.demo.services.UserDetailsServiceImpl;
 
-/**
- * Конфигурация Spring Security.
- * Настраивает правила доступа, форму логина, обработчик успешной аутентификации и выход.
- */
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor

@@ -9,43 +9,17 @@ import ru.kata.spring.boot_security.demo.model.User;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Репозиторий для работы с пользователями.
- */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    /**
-     * Находит пользователя по email с загрузкой ролей.
-     *
-     * @param email email пользователя
-     * @return Optional с найденным пользователем
-     */
     @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.roles WHERE u.email = :email")
     Optional<User> findByEmailWithRoles(@Param("email") String email);
 
-    /**
-     * Находит всех пользователей с загрузкой ролей.
-     *
-     * @return список всех пользователей
-     */
     @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.roles ORDER BY u.id ASC")
     List<User> findAllWithRoles();
 
-    /**
-     * Находит пользователя по ID с загрузкой ролей.
-     *
-     * @param id идентификатор пользователя
-     * @return Optional с найденным пользователем
-     */
     @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.roles WHERE u.id = :id")
     Optional<User> findByIdWithRoles(@Param("id") Long id);
 
-    /**
-     * Проверяет существование пользователя по email.
-     *
-     * @param email email пользователя
-     * @return true если пользователь существует
-     */
     boolean existsByEmail(String email);
 }

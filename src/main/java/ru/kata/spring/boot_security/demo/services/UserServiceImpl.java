@@ -2,22 +2,15 @@ package ru.kata.spring.boot_security.demo.services;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-/**
- * Реализация сервиса для управления пользователями.
- */
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -25,11 +18,9 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final RoleService roleService;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public List<User> listUsers() {
+    public List<User> findAll() {
         return userRepository.findAllWithRoles();
     }
 
@@ -40,76 +31,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void create(User user, Set<Long> roleIds) {
-        log.info("Creating user: {}", user.getEmail());
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Пользователь с email '" + user.getEmail() + "' уже существует!");
-        }
-
-        if (roleIds == null || roleIds.isEmpty()) {
-            user.setRoles(Set.of(roleService.getDefaultRole()));
-        } else {
-            user.setRoles(convertIdsToRoles(roleIds));
-        }
-
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
-        log.info("User created successfully: {}", user.getEmail());
+    public User save(User user) {
+        log.info("Saving user: {}", user.getEmail());
+        return userRepository.save(user);
     }
 
     @Override
     @Transactional
-    public void update(User user, Set<Long> roleIds, String newPassword) {
-        log.info("Updating user with ID: {}", user.getId());
-
-        if (roleIds == null || roleIds.isEmpty()) {
-            throw new IllegalArgumentException("Пользователь должен иметь как минимум одну роль!");
-        }
-
-        User existing = userRepository.findByIdWithRoles(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден! ID: " + user.getId()));
-
-        if (!existing.getEmail().equals(user.getEmail()) &&
-                userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Пользователь с email '" + user.getEmail() + "' уже существует!");
-        }
-
-        existing.setFirstName(user.getFirstName());
-        existing.setLastName(user.getLastName());
-        existing.setAge(user.getAge());
-        existing.setEmail(user.getEmail());
-
-        if (newPassword != null && !newPassword.isEmpty()) {
-            existing.setPassword(passwordEncoder.encode(newPassword));
-        }
-
-        existing.setRoles(convertIdsToRoles(roleIds));
-        userRepository.save(existing);
-        log.info("User updated successfully: {}", existing.getEmail());
-    }
-
-    @Override
-    @Transactional
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         log.info("Deleting user with ID: {}", id);
 
         if (!userRepository.existsById(id)) {
-            throw new EntityNotFoundException("Пользователь не найден. ID: " + id);
+            throw new EntityNotFoundException("User not found with ID: " + id);
         }
 
         userRepository.deleteById(id);
         log.info("User deleted successfully: ID {}", id);
     }
 
-    private Set<Role> convertIdsToRoles(Set<Long> roleIds) {
-        if (roleIds == null || roleIds.isEmpty()) {
-            return Set.of();
-        }
-        return roleIds.stream()
-                .map(roleService::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet());
+    @Override
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmailWithRoles(email);
     }
 }

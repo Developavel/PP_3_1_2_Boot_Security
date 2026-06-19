@@ -10,9 +10,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Set;
 
-/**
- * DTO для создания нового пользователя.
- */
 @Data
 @NoArgsConstructor
 public class UserCreateDto {
