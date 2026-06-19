@@ -66,9 +66,6 @@ class UserDtoServiceImplTest {
         when(userService.save(user)).thenReturn(user);
         when(userMapper.toResponseDto(user)).thenReturn(new UserResponseDto());
 
-        // When
-        UserResponseDto result = userDtoService.createUser(createDto);
-
         // Then
         verify(userService).save(user);
         assertThat(user.getRoles()).containsExactly(defaultRole);
