@@ -2,9 +2,9 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/mydb
-    username: root
-    password: root
+    url: jdbc:mysql://localhost:3307/mydb
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:root}
 
   # Hibernate
   jpa:
@@ -13,7 +13,7 @@ spring:
         dialect: org.hibernate.dialect.MySQL8Dialect
         show-sql: false
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
 # Admin initialization
 app:

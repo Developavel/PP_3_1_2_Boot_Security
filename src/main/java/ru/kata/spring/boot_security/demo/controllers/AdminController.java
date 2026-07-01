@@ -49,8 +49,8 @@ public class AdminController {
     @PostMapping("/api/users")
     @ResponseBody
     public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserCreateDto createDto) {
-        UserResponseDto created = userDtoService.createUser(createDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+        //UserResponseDto created = userDtoService.createUser(createDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDtoService.createUser(createDto));
     }
 
     @PutMapping("/api/users/{id}")
@@ -58,8 +58,8 @@ public class AdminController {
     public ResponseEntity<UserResponseDto> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody UserUpdateDto updateDto) {
-        UserResponseDto updated = userDtoService.updateUser(id, updateDto);
-        return ResponseEntity.ok(updated);
+        //UserResponseDto updated = userDtoService.updateUser(id, updateDto);
+        return ResponseEntity.ok(userDtoService.updateUser(id, updateDto));
     }
 
     @DeleteMapping("/api/users/{id}")
